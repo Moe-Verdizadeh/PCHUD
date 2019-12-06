@@ -1,0 +1,16 @@
+.padded-top-1x{
+    padding-top:5px;
+}
+
+.padded-top-2x{
+    padding-top:10px;
+}
+
+.padded-top-3x{
+    padding-top:15px;
+}
+
+
+.padded-all-3x{
+    padding:15px;
+}

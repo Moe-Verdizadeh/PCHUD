@@ -1,0 +1,1 @@
+var SERVICE_URL = "https://testappapi.palletconnect.com/api/";
