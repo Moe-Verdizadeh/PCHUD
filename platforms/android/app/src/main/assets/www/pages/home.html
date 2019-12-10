@@ -1,0 +1,31 @@
+    <div class="container" >
+        <div class="row">
+            <br />
+            <br /> 
+            <div class="col-xs-12"><img src="img/logo.png" style="width:100%;" /></div>
+        </div>
+        <div class="row padded-top-3x">
+            <div class="col-xs-12 text-center padded-all-3x"><h1 style="color: #0c5a91;" id="app_code">
+                {^{if code == null}}
+                    <span class="fa fa-spin fa-circle-notch"></span>
+                {{else}}
+                    <span data-link="code"></span>
+                {{/if}}
+                </h1></div>
+        </div>
+        <div class="row padded-top-3x">
+            <div class="col-xs-offset-3 col-xs-6 text-center"><h4>Enter the code on to your app</h4></div>
+        </div>
+        <div class="row padded-top-3x">
+            <div class="col-xs-offset-3 col-xs-6 text-left">1: Open Pallet Connect, and sign in.</div>
+        </div>
+        <div class="row padded-top-3x">
+            <div class="col-xs-offset-3 col-xs-6 text-left">2: Go to Settings -> Account Settings -> Link A Device.</div>
+        </div>
+        <div class="row padded-top-3x">
+            <div class="col-xs-offset-3 col-xs-6 text-left">3: Type in the 6 digit code to Link your device.</div>
+        </div>
+        <div class="row padded-top-3x">
+            <div class="col-xs-12 text-center"><a onclick="app.navigate( 'screen_selection' )" class="btn btn-block btn-primary">GO</a></div>
+        </div>
+    </div>

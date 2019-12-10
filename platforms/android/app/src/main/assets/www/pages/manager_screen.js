@@ -1,0 +1,7 @@
+function manager_screen(){
+
+   
+
+
+    
+}

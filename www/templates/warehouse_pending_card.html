@@ -1,0 +1,26 @@
+<div class="card" style="margin-bottom:10px;">
+    <div class="img-rounded media bg-light" data-link="class{merge:is_new toggle='bg-info'}  class{merge:days_diff < -1 toggle='bg-danger'}"> 
+        <div class="media-left media-middle text-center" style="width:18%;">
+            <h3 style="margin:0;">{^{:sum}}</h3>  Pallets
+        </div> 
+        <div class="media-body"> 
+            <div class="row">
+                <div class="col-xs-12"><h3 style="margin:0;">{^{:contact_name}}</h3></div>
+                {^{if public_notes.length > 0}}
+                    <div class="col-xs-12">
+                        {^{:public_notes}}
+                    </div>
+                {{/if}}
+            </div>
+        </div> 
+        <div class="media-right media-middle text-center" style="width:18%;">
+            {^{if overdue}}
+                <span class="far fa-2x fa-frown-open text-danger"></span><br /><b><span data-link="days_diff_positive"></span> Days Overdue</b>
+            {{else days_diff_positive == 0}}
+                <span class="far fa-2x fa-meh text-info"></span><br /><b>DUE TODAY</b>
+            {{else}}
+                <span class="far fa-2x fa-grin-beam text-success"></span><br /><b>Due In <span data-link="days_diff_positive"></span> Days</b>
+            {{/if}}
+        </div> 
+    </div>
+</div> 
