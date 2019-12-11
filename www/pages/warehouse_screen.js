@@ -9,7 +9,7 @@ function warehouse_screen(){
         },
         success: function ( response ){ 
             $.observable( app.data.warehouse.summary ).refresh( [
-                { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repairs: 1 , today: response.data.repairs.today.qty  , this_month: response.data.repairs.thisMonth.qty },
+                { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repairs: 1 , today: response.data.repairs.today.qty  , this_month: response.data.repairs.thisMonth.qty  },
                 { is_build: 0 , is_sales: 1 , is_purchases: 0 , is_repairs: 0 , today: response.data.today.outgoing.qty , this_month: response.data.thisMonth.outgoing.qty } ,
                 { is_build: 0 , is_sales: 0 , is_purchases: 1 , is_repairs: 0 , today: response.data.today.incoming.qty , this_month: response.data.thisMonth.incoming.qty }
             ] );
@@ -71,10 +71,10 @@ function transactionUpdated( PushedData ){
                 compareToFinalized = false;
                 console.log( transaction ); 
                 if( transaction.future_indicator == 1 ){
-                    var newTotal = ( parseInt( app.data.warehouse.customer_pending.replace( ',' ,'' ) ) - parseInt( transaction.sum ) ).format();
+                    var newTotal = ( parseInt( app.data.warehouse.customer_pending.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
                     $.observable( app.data.warehouse ).setProperty( "customer_pending" , newTotal ) ;
                 }else{ 
-                    var newTotal = ( parseInt( app.data.warehouse.supplier_pending.replace( ',' ,'' ) ) - parseInt( transaction.sum ) ).format();
+                    var newTotal = ( parseInt( app.data.warehouse.supplier_pending.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
                     $.observable( app.data.warehouse ).setProperty( "supplier_pending" , newTotal ) ;
                 }
                 $.observable( app.data.warehouse.pending_transactions.rows ).remove( ind , 1 );
@@ -91,28 +91,42 @@ function transactionUpdated( PushedData ){
         var original = PushedData.origin;
         var original_type_id = original.transaction_types_id;
         // is it outgoing ? 
-        var is_original_outgoing    = original.transaction_types.db_cr_indicator == 1  || original.transaction_types.ftt_indicator == 1;
-        var is_original_incoming    = !is_original_outgoing;
-        var is_original_pending     = original.transaction_types.db_cr_indicator == 0;
-        var is_original_an_order    = original.transaction_types.id == 4;
-        var is_original_a_request   = original.transaction_types.id == 2;
+        var is_original_outgoing    = original.transaction_types.db_cr_indicator == 1  || original.transaction_types.ftt_indicator == 1; //cus
+        var is_original_incoming    = !is_original_outgoing; //sup
+        var is_original_pending     = original.transaction_types.db_cr_indicator == 0; // for create
+        var is_original_an_order    = original.transaction_types.id == 4; //cus
+        var is_original_a_request   = original.transaction_types.id == 2; //sup
         var is_original_internal    = original.transaction_types.is_internal;
         var is_original_external    = !is_original_internal;
         var is_original_repair      = '';// this you can figure out
         var is_original_build       = '';// this you can figure out
         var is_original_cut         = '';// this you can figure out
-        var original_total_qty      = 0;
+        var original_total_qty      = 0 ;// update
         $.each( original.transaction_details , function( i , detail ){
             original_total_qty += detail.quantity;
         });
         $.ajax({
             url: app.SERVICE_URL + "transactions/" + PushedData.id,
             success: function( newTransactionDataResponse ){
+
                 newTransactionData = newTransactionDataResponse.data;
                 if( PushedData.action == "created" ){
+                    console.log("Creating a new one transaction ")
+                    $.each( app.data.warehouse.pending_transactions.rows , function( index , transaction){
+                        if( !PushedData.origin){
 
+                        }
+                    });
                 }else if( PushedData.action == "updated" ){
+                    console.log("updating a new one transaction ")
+                    var temp = origin;
+                    $.each( app.data.warehouse.pending_transactions.rows , function( index ){
+                        if( transaction.future_indicator == PushedData.id){
+                                //if transaction.future_indicator  +1 is a customer 
 
+                                //else if its -1 its a supplier
+                        }
+                    });
                 }
             }
         });
