@@ -9,9 +9,9 @@ function warehouse_screen(){
         },
         success: function ( response ){ 
             $.observable( app.data.warehouse.summary ).refresh( [
-                { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repairs: 1 , today: response.data.repairs.today.qty  , this_month: response.data.repairs.thisMonth.qty  },
-                { is_build: 0 , is_sales: 1 , is_purchases: 0 , is_repairs: 0 , today: response.data.today.outgoing.qty , this_month: response.data.thisMonth.outgoing.qty } ,
-                { is_build: 0 , is_sales: 0 , is_purchases: 1 , is_repairs: 0 , today: response.data.today.incoming.qty , this_month: response.data.thisMonth.incoming.qty }
+                { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repair: 1 , today: response.data.repairs.today.qty  , this_month: response.data.repairs.thisMonth.qty  },
+                { is_build: 0 , is_sales: 0 , is_purchases: 1 , is_repair: 0 , today: response.data.today.incoming.qty , this_month: response.data.thisMonth.incoming.qty },
+                { is_build: 0 , is_sales: 1 , is_purchases: 0 , is_repair: 0 , today: response.data.today.outgoing.qty , this_month: response.data.thisMonth.outgoing.qty }, 
             ] );
             $.observable( app.data.warehouse ).setProperty( {
                 customer_pending    : response.data.pending.outgoing.qty,
@@ -69,6 +69,7 @@ function transactionUpdated( PushedData ){
         $.each( app.data.warehouse.pending_transactions.rows , function( ind , transaction ){
             if( transaction.id == PushedData.id ){
                 compareToFinalized = false;
+                console.log( "This is the transaction..." ); 
                 console.log( transaction ); 
                 if( transaction.future_indicator == 1 ){
                     var newTotal = ( parseInt( app.data.warehouse.customer_pending.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
@@ -84,18 +85,73 @@ function transactionUpdated( PushedData ){
         // compare against finished totals
         if( compareToFinalized ){
             $.ajax({
-                url: app.SERVICE_URL + "transactions/" + PushedData.id
+                url: app.SERVICE_URL + "transactions/" + PushedData.id, 
+                success: function( response , ind ){  
+                    transaction = response.data; 
+                    console.log( transaction );
+                    console.log( transaction.sum );
+                    console.log( "Internal " + transaction.transaction_types.is_internal );
+                    console.log( transaction.transaction_types.is_repair );  
+
+                    var repairs     = {};
+                    var builds      = {};
+                    var sales       = {};
+                    var purchases   = {};
+                    var isToday     = new Date( transaction.transaction_date_time ).getDate()   === new Date().getDate() ;
+                    var isThisMonth = new Date( transaction.transaction_date_time ).getMonth()  === new Date().getMonth() ;
+
+                    $.each(app.data.warehouse.summary , function ( ind , data ){
+                        if( data.is_repair ){
+                            repairs     = data;
+                        }else if( data.is_build ){
+                            builds      = data;
+                        }else if( data.is_purchases ){
+                            purchases   = data;
+                        }else if( data.is_sales ){
+                            sales       = data;
+                        }
+                    });
+                    if( transaction.transaction_types.is_repair == 1 ){ 
+                        if( isToday ){
+                            var newTotal = ( parseInt( repairs.today.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
+                            $.observable( repairs ).setProperty( "today" , newTotal ) ;  
+                        }
+                        if( isThisMonth ){
+                            var newTotal = ( parseInt( repairs.this_month.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
+                            $.observable( repairs ).setProperty( "this_month" , newTotal ) ;
+                        }
+                    }else if( !transaction.transaction_types.is_internal ) {
+                        if(transaction.transaction_types.db_cr_indicator == 1 ){
+                            if( isToday ){
+                                var newTotal = ( parseInt( sales.today.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
+                                $.observable( sales ).setProperty( "today" , newTotal ) ;  
+                            }
+                            if( isThisMonth ){
+                                var newTotal = ( parseInt( sales.this_month.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
+                                $.observable( sales ).setProperty( "this_month" , newTotal ) ;
+                            } 
+                        }else if( transaction.transaction_types.db_cr_indicator == -1 ){
+                            if( isToday ){
+                                var newTotal = ( parseInt( purchases.today.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
+                                $.observable( purchases ).setProperty( "today" , newTotal ) ;  
+                            }
+                            if( isThisMonth ){
+                                var newTotal = ( parseInt( purchases.this_month.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
+                                $.observable( purchases ).setProperty( "this_month" , newTotal ) ;
+                            } 
+                        } 
+                    } 
+                }
             });
         }
     }else{
         var original = PushedData.origin;
-        var original_type_id = original.transaction_types_id;
-        // is it outgoing ? 
-        var is_original_outgoing    = original.transaction_types.db_cr_indicator == 1  || original.transaction_types.ftt_indicator == 1; //cus
-        var is_original_incoming    = !is_original_outgoing; //sup
-        var is_original_pending     = original.transaction_types.db_cr_indicator == 0; // for create
-        var is_original_an_order    = original.transaction_types.id == 4; //cus
-        var is_original_a_request   = original.transaction_types.id == 2; //sup
+        var original_type_id = original.transaction_types_id; 
+        var is_original_outgoing    = original.transaction_types.db_cr_indicator == 1  || original.transaction_types.ftt_indicator == 1;
+        var is_original_incoming    = !is_original_outgoing; 
+        var is_original_pending     = original.transaction_types.db_cr_indicator == 0; 
+        var is_original_an_order    = original.transaction_types.id == 4; 
+        var is_original_a_request   = original.transaction_types.id == 2; 
         var is_original_internal    = original.transaction_types.is_internal;
         var is_original_external    = !is_original_internal;
         var is_original_repair      = '';// this you can figure out
@@ -105,31 +161,34 @@ function transactionUpdated( PushedData ){
         $.each( original.transaction_details , function( i , detail ){
             original_total_qty += detail.quantity;
         });
-        $.ajax({
-            url: app.SERVICE_URL + "transactions/" + PushedData.id,
-            success: function( newTransactionDataResponse ){
+        
 
-                newTransactionData = newTransactionDataResponse.data;
-                if( PushedData.action == "created" ){
-                    console.log("Creating a new one transaction ")
-                    $.each( app.data.warehouse.pending_transactions.rows , function( index , transaction){
-                        if( !PushedData.origin){
+        newTransactionData = newTransactionDataResponse.data;
+        if( PushedData.action == "created" ){
+            console.log("Creating a new one transaction ")
+            $.each( app.data.warehouse.pending_transactions.rows , function( index ){
+                if( true ){
 
-                        }
-                    });
-                }else if( PushedData.action == "updated" ){
-                    console.log("updating a new one transaction ")
-                    var temp = origin;
-                    $.each( app.data.warehouse.pending_transactions.rows , function( index ){
-                        if( transaction.future_indicator == PushedData.id){
+                }
+            });
+        }else if( PushedData.action == "updated" ){
+            $.ajax({
+                url: app.SERVICE_URL + "transactions/" + PushedData.id,
+                success: function( newTransactionDataResponse ){
+                    console.log("updating a new one transaction ") 
+                    console.log("this is the pushed data... ");
+                    console.log( PushedData );
+                    $.each( app.data.warehouse.pending_transactions.rows , function( index ){ 
+                        if( PushedData.id ){
+                            
                                 //if transaction.future_indicator  +1 is a customer 
-
+                                
                                 //else if its -1 its a supplier
                         }
                     });
                 }
-            }
-        });
+            });
+        } 
     }
 }
 
