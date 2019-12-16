@@ -1,5 +1,5 @@
 <div class="card" style="margin-bottom:10px;">
-    <div class="img-rounded media bg-light" data-link="class{merge:is_new toggle='bg-info'}  class{merge:days_diff < -1 toggle='bg-danger'}"> 
+    <div class="img-rounded media bg-light" data-link="class{merge:(!is_new && days_diff < -1) toggle='bg-danger'} class{merge:is_new toggle='bg-success'}"> 
         <div class="media-left media-middle text-center" style="width:18%;">
             <h3 style="margin:0;">{^{:sum}}</h3>  Pallets
         </div> 

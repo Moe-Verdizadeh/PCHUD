@@ -3,6 +3,8 @@ var app = {
     pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , "manager_screen"  ],
     templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' ],
     codeTimer: null,
+    refreshTimer: null,
+    nextRefresh: 0,
     data: {
         code: null,
         warehouse: { pending_transactions : { rows: [] } , summary: [] },
