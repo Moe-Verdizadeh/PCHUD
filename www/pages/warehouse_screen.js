@@ -1,282 +1,238 @@
-function warehouse_screen(){
+
+var repairs     = {};
+var builds      = {};
+var sales       = {};
+var purchases   = {};
+function warehouse_screen(){ 
+    
     localStorage.pallet_connect_hud_lastScreen = 'warehouse_screen';
     $.ajax({
         url: app.SERVICE_URL + "monthlyValues",
         data: {
-            vendors: 0,
-            new: 0,
-            recycled: 1
+            vendors:    0,
+            new:        ( localStorage.warehouse_screen_type == "new"      ? 1 : 0 ),
+            recycled:   ( localStorage.warehouse_screen_type == "recycled" ? 1 : 0 ),
         },
         success: function ( response ){ 
             $.observable( app.data.warehouse.summary ).refresh( [
-                { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repair: 1 , today: response.data.repairs.today.qty  , this_month: response.data.repairs.thisMonth.qty  },
-                { is_build: 0 , is_sales: 0 , is_purchases: 1 , is_repair: 0 , today: response.data.today.incoming.qty , this_month: response.data.thisMonth.incoming.qty },
                 { is_build: 0 , is_sales: 1 , is_purchases: 0 , is_repair: 0 , today: response.data.today.outgoing.qty , this_month: response.data.thisMonth.outgoing.qty }, 
-            ] );
-            $.observable( app.data.warehouse ).setProperty( {
-                customer_pending    : response.data.pending.outgoing.qty,
-                supplier_pending    : response.data.pending.incoming.qty 
-            });  
-            loadTransactions( [ 4 , 2 ] );
+                { is_build: 0 , is_sales: 0 , is_purchases: 1 , is_repair: 0 , today: response.data.today.incoming.qty , this_month: response.data.thisMonth.incoming.qty },
+                { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repair: 1 , today: response.data.repairs.today.qty  , this_month: response.data.repairs.thisMonth.qty  },
+                { is_build: 1 , is_sales: 0 , is_purchases: 0 , is_repair: 0 , today: response.data.builds.today.qty   , this_month: response.data.builds.thisMonth.qty}, 
+            ] ); 
+            $.each( app.data.warehouse.summary , function ( ind , data ){
+                if( data.is_repair ){
+                    repairs     = data;
+                }else if( data.is_build ){
+                    builds      = data;
+                }else if( data.is_purchases ){
+                    purchases   = data;
+                }else if( data.is_sales ){
+                    sales       = data;
+                }
+            });
+            warehouse_screen_obj.loadTransactions( [ 4 , 2 ] );
             console.log( "Monthly Values " , response ); 
+            
             if( app.refreshTimer !== null ){
                 clearTimeout( app.refreshTimer );
             }
             app.nextRefresh = new Date().getTime() + 3600000;
             app.refreshTimer = setTimeout( warehouse_screen , 3600000 );
+            $.observable( app.data.warehouse.pending_transactions.rows ).observeAll(  warehouse_screen_obj.updateTotals ); 
         },
         error: function( error ){
             console.log( "ERROR FETCHING DATA " + error );
         }
-    });
-
-    
-}
-var transactionsChannel = null;
-function loadTransactions( types ){
-    $.ajax({
-        url: app.SERVICE_URL + "transactions",
-        data: {
-            grouped: true,
-            deleted: 0,
-            filter: { "db_cr_indicator": 0,"on_hold": 0 },
-            sort: 'transaction_date',
-            order: 'asc',
-            include_stock_items: true,
-            isQueue: true,
-            types: types,
-        },
-        success: function( response ){
-            $.observable( app.data.warehouse.pending_transactions.rows ).refresh( response.data.rows );
-            $.each( app.data.warehouse.pending_transactions.rows , function( ind ){
-                applyDaysDiff( ind )
-            });
-            if( transactionsChannel !== null ){
-                socketHelper.pusher.unsubscribe( 'TransactionsChannel.' + localStorage.pallet_connect_hud_site );
-                transactionsChannel = null;
-            }
-            transactionsChannel = socketHelper.pusher.subscribe( 'TransactionsChannel.' + localStorage.pallet_connect_hud_site );
-            transactionsChannel.bind( 'transaction_updates_all' , transactionUpdated );
-        },
-        error: function( error ){
-            socketHelper.error( error );
-        }
-    });
+    });  
 } 
+
+var warehouse_screen_obj = { 
+    updateTotals: function(){
+        var supplier_total = "" + 0;
+        var customer_total = "" + 0;
+        var supplier_count = 0;
+        var customer_count = 0;
+        $.each( app.data.warehouse.pending_transactions.rows , function( ind , transaction ){
+            if( transaction.future_indicator == -1 ){
+                supplier_total = warehouse_screen_obj.calcNewTotal( supplier_total , transaction.sum );
+                supplier_count++;
+            }else{
+                customer_total = warehouse_screen_obj.calcNewTotal( customer_total , transaction.sum );
+                customer_count++;
+            }
+        });
+ 
+        $.observable( app.data.warehouse ).setProperty( "supplier_pending_qty" , supplier_total ); 
+        $.observable( app.data.warehouse ).setProperty( "customer_pending_qty" , customer_total ); 
+
+        $.observable( app.data.warehouse ).setProperty( "supplier_pending_count" , supplier_count ); 
+        $.observable( app.data.warehouse ).setProperty( "customer_pending_count" , customer_count ); 
+    }, 
+
+    loadTransactions: function( types ){
+        $.ajax({
+            url: app.SERVICE_URL + "transactions",
+            data: {
+                grouped: true,
+                deleted: 0,
+                filter: { "db_cr_indicator": 0,"on_hold": 0 },
+                sort: 'transaction_date',
+                order: 'asc',
+                include_stock_items: true,
+                isQueue: true,
+                types: types,
+            },
+            success: function( response ){
+                $.observable( app.data.warehouse.pending_transactions.rows ).refresh( response.data.rows );
+                $.each( app.data.warehouse.pending_transactions.rows , function( ind ){
+                    applyDaysDiff( ind )
+                });
+                if( app.transactionsChannel !== null ){
+                    socketHelper.pusher.unsubscribe( 'TransactionsChannel.' + localStorage.pallet_connect_hud_site );
+                    app.transactionsChannel = null;
+                }
+                app.transactionsChannel = socketHelper.pusher.subscribe( 'TransactionsChannel.' + localStorage.pallet_connect_hud_site );
+                app.transactionsChannel.bind( 'transaction_updates_all' , transactionUpdated );
+            },
+            error: function( error ){
+                socketHelper.error( error );
+            }
+        });
+    }, 
+
+    setToday: function( observableObj , originalValue, difference ){
+        $.observable( observableObj ).setProperty( "today" , warehouse_screen_obj.calcNewTotal( originalValue, difference ) ) ;  
+    },
+
+    setThisMonth: function( observableObj , originalValue, difference ){
+        $.observable( observableObj ).setProperty( "this_month" , warehouse_screen_obj.calcNewTotal( originalValue, difference ) ) ;  
+    },
+
+    calcNewTotal: function( originalValue, difference ){
+        originalValue = "" + originalValue; 
+        return ( parseInt( originalValue.replace( ',' , '' ) ) + parseInt( difference ) ).format(); 
+    },
+
+    updateSummaryTotals: function( transaction , modifier ){ 
+        var objToUpdate = {};
+        // console.log( "updateSummaryTotals..." , transaction );
+        if( transaction.transaction_types.is_repair == 1 ){ 
+            // console.log( "Update Repairs" , repairs );
+            objToUpdate = repairs;
+        }else if(transaction.transaction_types.is_build == 1){
+            // console.log( "Update builds" , builds );
+            objToUpdate = builds; 
+        }else if( !transaction.transaction_types.is_internal && transaction.transaction_types.db_cr_indicator == 1 ){
+            // console.log( "Update sales" , sales );
+            objToUpdate = sales; 
+        }else  if( !transaction.transaction_types.is_internal && transaction.transaction_types.db_cr_indicator == -1 ){
+            // console.log( "Update purchases" , purchases );
+            objToUpdate = purchases; 
+        }
+        if( isToday( transaction.transaction_date_time ) ){
+            console.log( "Update Today" , objToUpdate   , objToUpdate.today, transaction.sum , modifier)
+            warehouse_screen_obj.setToday( objToUpdate   , objToUpdate.today, transaction.sum * modifier );
+        } 
+        if( isThisMonth( transaction.transaction_date_time ) ){
+            console.log( "Update This Month" , objToUpdate   , objToUpdate.this_month, transaction.sum , modifier)
+            warehouse_screen_obj.setThisMonth( objToUpdate , objToUpdate.this_month, transaction.sum * modifier ); 
+        } 
+    },
+}  
+
+function deletePendingRow( transactionId ){
+    var hasDeletedOne = false;
+    var transactionCount = app.data.warehouse.pending_transactions.rows.length;
+    for( var ind = ( transactionCount - 1 ); ind > 0; ind-- ){
+        if( transactionId == app.data.warehouse.pending_transactions.rows[ ind ].id ){  
+            $.observable( app.data.warehouse.pending_transactions.rows ).remove( ind , 1 );
+            hasDeletedOne = true;
+        }
+    }
+    return hasDeletedOne; 
+} 
+
 function transactionUpdated( PushedData ){
     console.log( PushedData ); 
     if( PushedData.action == "deleted" ){
-        //var arrLLength = app.data.warehouse.pending_transactions.rows.length;
-        var compareToFinalized = true;
-        $.each( app.data.warehouse.pending_transactions.rows , function( ind , transaction ){
-            if( transaction.id == PushedData.id ){
-                compareToFinalized = false;
-                console.log( "delete transaction..." ); 
-                console.log( transaction ); 
-                if( transaction.future_indicator == 1 ){
-                    var newTotal = ( parseInt( app.data.warehouse.customer_pending.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
-                    $.observable( app.data.warehouse ).setProperty( "customer_pending" , newTotal ) ;
-                }else{ 
-                    var newTotal = ( parseInt( app.data.warehouse.supplier_pending.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
-                    $.observable( app.data.warehouse ).setProperty( "supplier_pending" , newTotal ) ;
-                }
-                $.observable( app.data.warehouse.pending_transactions.rows ).remove( ind , 1 );
-                return false;
-            }
-        });
-        // compare against finished totals
-        if( compareToFinalized ){
-            $.ajax({
-                url: app.SERVICE_URL + "transactions/" + PushedData.id, 
-                success: function( response ){  
-                    transaction = response.data; 
-                    console.log( transaction );
-                    console.log( transaction.sum );
-                    console.log( "Internal " + transaction.transaction_types.is_internal );
-                    console.log( transaction.transaction_types.is_repair );  
-
-                    var repairs     = {};
-                    var builds      = {};
-                    var sales       = {};
-                    var purchases   = {};
-                    var isToday     = new Date( transaction.transaction_date_time ).getDate()   === new Date().getDate() ;
-                    var isThisMonth = new Date( transaction.transaction_date_time ).getMonth()  === new Date().getMonth() ;
-
-                    $.each(app.data.warehouse.summary , function ( ind , data ){
-                        if( data.is_repair ){
-                            repairs     = data;
-                        }else if( data.is_build ){
-                            builds      = data;
-                        }else if( data.is_purchases ){
-                            purchases   = data;
-                        }else if( data.is_sales ){
-                            sales       = data;
-                        }
-                    });
-                    if( transaction.transaction_types.is_repair == 1 ){ 
-                        if( isToday ){
-                            var newTotal = ( parseInt( repairs.today.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
-                            $.observable( repairs ).setProperty( "today" , newTotal ) ;  
-                        }
-                        if( isThisMonth ){
-                            var newTotal = ( parseInt( repairs.this_month.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
-                            $.observable( repairs ).setProperty( "this_month" , newTotal ) ;
-                        }
-                    }else if( !transaction.transaction_types.is_internal ) {
-                        if(transaction.transaction_types.db_cr_indicator == 1 ){
-                            if( isToday ){
-                                var newTotal = ( parseInt( sales.today.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
-                                $.observable( sales ).setProperty( "today" , newTotal ) ;  
-                            }
-                            if( isThisMonth ){
-                                var newTotal = ( parseInt( sales.this_month.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
-                                $.observable( sales ).setProperty( "this_month" , newTotal ) ;
-                            } 
-                        }else if( transaction.transaction_types.db_cr_indicator == -1 ){
-                            if( isToday ){
-                                var newTotal = ( parseInt( purchases.today.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
-                                $.observable( purchases ).setProperty( "today" , newTotal ) ;  
-                            }
-                            if( isThisMonth ){
-                                var newTotal = ( parseInt( purchases.this_month.replace( ',' , '' ) ) - parseInt( transaction.sum ) ).format();
-                                $.observable( purchases ).setProperty( "this_month" , newTotal ) ;
-                            } 
-                        } 
-                    } 
-                }
+        // console.log( "delete transaction..." );   
+        // compare against finished totals  
+        if( !deletePendingRow( PushedData.id ) ){ 
+            fetchTransaction( PushedData.id , function( response ){  
+                transaction = response.data;  
+                warehouse_screen_obj.updateSummaryTotals( transaction , -1 ); 
             });
         }
-    }else{ 
-       
-            $.ajax({
-                url: app.SERVICE_URL + "transactions/" + PushedData.id,
-                success: function( response ){  
-                    remoteTransaction = response.data; 
-                    $.each(app.data.warehouse.summary , function ( ind , data ){
-                        if( data.is_repair ){
-                            repairs     = data;
-                        }else if( data.build ){
-                            build      = data;
-                        }else if( data.is_purchases ){
-                            purchases   = data;
-                        }else if( data.is_sales ){
-                            sales       = data;
-                        }
-                    }); 
-                    var isToday                 = new Date( remoteTransaction.transaction_date_time ).getDate()   === new Date().getDate() ;
-                    var isThisMonth             = new Date( remoteTransaction.transaction_date_time ).getMonth()  === new Date().getMonth() ; 
-                    if( PushedData.action == "created" ){  
-                        if( ( new Date().getTime() + 600000 ) > app.nextRefresh ){
-                            clearTimeout( app.refreshTimer );
-                            // No need to reset app.nextRefresh as it will always be true in the above statement and then on the next reload it will reset it to an hour later
-                            app.refreshTimer = setTimeout( warehouse_screen , 600000 );
-                        }  
-                        // console.log( "Creating a new transaction " , remoteTransaction ); 
-                        // console.log( "adding qty = " , remoteTransaction.sum );   
-                        // console.log( "Check if it is pending .... " ); 
-                        if( remoteTransaction.transaction_types.db_cr_indicator == 0 ){
-                            // console.log( "It is pending" );  
-                            if( remoteTransaction.transaction_types.id == 2 ){ 
-                                // console.log( "It is a request" );   
-                                var newTotal = ( parseInt( app.data.warehouse.supplier_pending.replace( ',' , '' ) ) + parseInt( remoteTransaction.sum ) ).format();
-                                $.observable( app.data.warehouse ).setProperty( "supplier_pending" , newTotal ) ; 
-                            }else if( remoteTransaction.transaction_types.id == 4 ){
-                                // console.log( "It is an order" ); 
-                                var newTotal = ( parseInt( app.data.warehouse.customer_pending.replace( ',' , '' ) ) + parseInt( remoteTransaction.sum ) ).format();
-                                $.observable( app.data.warehouse ).setProperty( "customer_pending" , newTotal ) ;
-                            }
-                            remoteTransaction.is_new = 1;
-                            // insert the new transaction
-                            $.observable( app.data.warehouse.pending_transactions.rows ).insert( 0 , remoteTransaction );
-                            // apply days diff, this will also apply smiley faces :)
-                            applyDaysDiff( 0 );
-                            return false
-                        }  
-                        console.log( "Check if it is repair .... " );
-                        console.log( repairs.today )  
-                        //checking if repair, if it is add the total to the repair section
-                        //if is been added today, add it to the today and this month total.
-                        if( remoteTransaction.transaction_types.is_repair == 1 ){
-                            if( isToday ){
-                                var newTotal = ( parseInt( repairs.today.replace( ',' , '' ) ) + parseInt( remoteTransaction.sum ) ).format();
-                                $.observable( repairs ).setProperty( "today" , newTotal );
-                            }
-                            if( isThisMonth ){
-                                var newTotal = ( parseInt( repairs.this_month.replace( ',' , '' ) ) + parseInt( remoteTransaction.sum ) ).format();
-                                $.observable( repairs ).setProperty( "this_month" , newTotal ) ;
-                            }
-                            //checking if the transaction is not pending or internal
-                        }else if( !remoteTransaction.transaction_types.is_internal ){ 
-                            //checking if the transaction if outgoing
-                            if( remoteTransaction.transaction_types.db_cr_indicator == 1 ){
-                                if( isToday ){
-                                    var newTotal = ( parseInt( sales.today.replace( ',' , '' ) ) + parseInt( remoteTransaction.sum ) ).format();
-                                    $.observable( sales ).setProperty( "today" , newTotal ) ;  
-                                }
-                                if( isThisMonth ){
-                                    var newTotal = ( parseInt( sales.this_month.replace( ',' , '' ) ) + parseInt( remoteTransaction.sum ) ).format();
-                                    $.observable( sales).setProperty( "this_month" , newTotal ) ;
-                                }
-                                //checking if the transaction is incoming
-                            }else if( remoteTransaction.transaction_types.db_cr_indicator == -1 ){  
-                                if( isToday ){
-                                    var newTotal = ( parseInt( purchases.today.replace( ',' , '' ) ) + parseInt( remoteTransaction.sum ) ).format();
-                                    $.observable( purchases ).setProperty( "today" , newTotal ) ;  
-                                }
-                                if( isThisMonth ){
-                                    var newTotal = ( parseInt( purchases.this_month.replace( ',' , '' ) ) + parseInt( remoteTransaction.sum ) ).format();
-                                    $.observable( purchases ).setProperty( "this_month" , newTotal ) ; 
-                                } 
-                            }
-                        }  
-                    } else if( PushedData.action == "updated" ){
-
-                        var original                = PushedData.origin;
-                        var original_type_id        = original.transaction_types_id; // (4 , 2)
-                        var is_original_outgoing    = original.transaction_types.db_cr_indicator == 1 || original.transaction_types.ftt_indicator == 1;
-                        var is_original_incoming    = !is_original_outgoing; 
-                        var is_original_pending     = original.transaction_types.db_cr_indicator == 0; 
-                        var is_original_an_order    = original.transaction_types.id == 4; 
-                        var is_original_a_request   = original.transaction_types.id == 2; 
-                        var is_original_internal    = original.transaction_types.is_internal;
-                        var is_original_external    = !is_original_internal;
-                        var is_original_repair      = original.transaction_types.is_repair;
-                        var is_original_build       = original.transaction_types.is_build;
-                        var is_original_cut         = original.transaction_types.is_cut;
-                        var original_total_qty      = 0 ;// update 
-                         
-                        $.each( original.transaction_details , function( i , detail ){
-                            original_total_qty += detail.quantity;
-                        });   
-                        newTransactionData = newTransactionDataResponse.data;
-
-                        console.log("updating a new one transaction "); 
-                        console.log(original) 
-                        console.log(app.data.warehouse.pending_transactions.rows);
-                        $.each( app.data.warehouse.pending_transactions.rows , function(){
-                            if( is_original_pending && is_original_an_order ){
-                                //set the new qty and display the update numbers for pending list
-                                
-                                //$.observable( app.data.warehouse ).setProperty( "customer_pending" , new qty total ) ; 
-                            }else if ( is_original_pending && is_original_a_request ){
-                                //and 
-                                //$.observable( app.data.warehouse ).setProperty( "supplier_pending" , new qty total ) ; 
-                            }
-                        });
-                        if(is_original_repair){
-                            //set the new qty and display it on for the today and this month for repairs
-                        }
-                        if(is_original_external){
-                            //set the new qty and display it on for the today and this month for sales 
-                        }
-                        if(is_original_incoming){
-                            //set the new qty and display it on for the today and this month for purchase  
-                        } 
+    }else{  
+        fetchTransaction( PushedData.id , function( response ){  
+            remoteTransaction = response.data;
+            if( PushedData.action == "created" ){  
+                if( ( new Date().getTime() + 600000 ) > app.nextRefresh ){
+                    clearTimeout( app.refreshTimer );
+                    // No need to reset app.nextRefresh as it will always be true in the above statement and then on the next reload it will reset it to an hour later
+                    app.refreshTimer = setTimeout( warehouse_screen , 600000 );
+                }  
+                // console.log( "Creating a new transaction " , remoteTransaction ); 
+                // console.log( "Check if it is pending .... " ); 
+                if( remoteTransaction.transaction_types.db_cr_indicator == 0 ){ 
+                    remoteTransaction.is_new = 1;
+                    $.observable( app.data.warehouse.pending_transactions.rows ).insert( 0 , remoteTransaction );
+                    // apply days diff, this will also apply smiley faces :)
+                    applyDaysDiff( 0 );
+                    return false
+                }   
+                warehouse_screen_obj.updateSummaryTotals( remoteTransaction , 1 );
+            } 
+            else if( PushedData.action == "updated" ){
+                var original                = PushedData.origin;
+                var original_total_qty      = 0 ;// update  
+                $.each( original.transaction_details , function( i , detail ){
+                    original_total_qty += detail.quantity; 
+                });     
+                original.sum = original_total_qty; 
+                console.log("updating a new one transaction ");     
+                if( remoteTransaction.transaction_types.db_cr_indicator != 0 ){
+                    // update summary totals 
+                    if( original.transaction_types.db_cr_indicator == 0 ){
+                        deletePendingRow( remoteTransaction.id );
+                        warehouse_screen_obj.updateSummaryTotals( remoteTransaction , 1);
                     }
-                }
-            });
-        } 
+                    else if( original.transaction_types.id == remoteTransaction.transaction_types.id ){
+                        // apply difference  
+                        var diff = remoteTransaction.sum - original_total_qty; 
+                        remoteTransaction.sum = diff; 
+                        warehouse_screen_obj.updateSummaryTotals( remoteTransaction , 1);
+                    }
+                    else{ 
+                        warehouse_screen_obj.updateSummaryTotals( original , -1);
+                        warehouse_screen_obj.updateSummaryTotals( remoteTransaction , 1);
+                    }
+                } 
+                else if( original.transaction_types.db_cr_indicator == 0 ){ 
+                    $.each( app.data.warehouse.pending_transactions.rows , function( ind , row ){
+                        if( row.id == remoteTransaction.id ){
+                            remoteTransaction.is_new = 1;
+                            $.observable( app.data.warehouse.pending_transactions.rows[ ind ] ).setProperty( remoteTransaction );
+                            // apply days diff, this will also apply smiley faces :) 
+                            applyDaysDiff( 0 );
+                        }
+                    });
+                        
+                }else{
+                    // update summary totals
+                    warehouse_screen_obj.updateSummaryTotals( original , -1 ); 
+                    deletePendingRow( remoteTransaction.id );
+                    // but if the row is not the list already, add it
+                    $.observable( app.data.warehouse.pending_transactions.rows ).insert( 0 , remoteTransaction );
+                    // apply days diff, this will also apply smiley faces :)
+                    applyDaysDiff( 0 );
+                }  
+            }
+        });
     } 
+} 
+
 function applyDaysDiff( ind ){ 
     var thisDaysDiff = daysDiff( app.data.warehouse.pending_transactions.rows[ ind ].transaction_date_time , false );
     $.observable( app.data.warehouse.pending_transactions.rows[ ind ] ).setProperty( "days_diff" , thisDaysDiff );
@@ -293,3 +249,5 @@ function daysDiff( dateToUse , useAbsolute ){
 function addingIndex(){
 
 } 
+
+

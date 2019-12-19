@@ -13,28 +13,26 @@ function home(){
             }
         });  
     }else{
-        app.token = localStorage.pallet_connect_hud_token;
+        setAjaxHeaders();
         // maybe token needs to be renewed after 6 months
-
-
         var screen = "screen_selection"; 
         if( typeof( localStorage.pallet_connect_hud_lastScreen ) !== "undefined" ){
-            app.navigate( localStorage.pallet_connect_hud_lastScreen );
+            screen =  localStorage.pallet_connect_hud_lastScreen;
         }
+        // console.log( "111" ); 
         app.navigate( screen );
+        console.log( "GO TO " + screen ); 
     }
 }
 
-function code_verified( dataFromServer ) {
-    console.info( dataFromServer );
-    clearTimeout( app.codeTimer );
-    var code = "" + app.data.code;
-    $.observable( app.data ).setProperty( "code" , null );
-    app.app_id                              = dataFromServer.app_id;
-    app.token                               = dataFromServer.token;
-    // localStorage.pallet_connect_hud_token   = app.token;  
+function code_verified( dataFromServer ) { 
+    clearTimeout( app.codeTimer ); 
+    localStorage.pallet_connect_hud_app_id  = dataFromServer.app_id;
+    localStorage.pallet_connect_hud_token   = dataFromServer.token;  
+    localStorage.pallet_connect_hud_site    = dataFromServer.site;  
+    setAjaxHeaders();
     $.ajax({
-        url: app.SERVICE_URL + "code_confirmed/" + code + "?app_id=" + dataFromServer.app_id + "&token=" + dataFromServer.token,
+        url: app.SERVICE_URL + "code_confirmed/" + app.data.code,
         success: function ( response ){
             console.log( "CODE CLEARED DATA RESPONSE " + response ); 
             setTimeout( function(){ app.navigate( "screen_selection" ); } , 1000 );
@@ -42,6 +40,6 @@ function code_verified( dataFromServer ) {
         error: function( error ){
             console.log( "ERROR FETCHING DATA " + error );
         }
-    })
-
+    });
+    $.observable( app.data ).setProperty( "code" , null ); 
 }

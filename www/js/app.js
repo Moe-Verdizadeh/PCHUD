@@ -1,11 +1,14 @@
 var app = {
     SERVICE_URL: "https://testappapi.palletconnect.com/api/",
-    pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , "manager_screen"  ],
+    pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , 'warehouse_selection' , "manager_screen"  ],
     templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' ],
     codeTimer: null,
     refreshTimer: null,
-    nextRefresh: 0,
+    transactionsChannel: null,
+    nextRefresh: 0, 
     data: {
+        current_time: 0,
+        current_date: 0,
         code: null,
         warehouse: { pending_transactions : { rows: [] } , summary: [] },
     },
@@ -83,11 +86,43 @@ var app = {
             });
         }
         return deferred.promise();
-    }
+    },
+    logout: function(){
+        localStorage.clear();
+        app.navigate( "home" );  
+   }
 };
 
 app.initialize();
 
+
+function isToday( dateToCheck){ 
+    return new Date( dateToCheck ).getDate()  === new Date().getDate() ; 
+}
+function isThisMonth( dateToCheck ){ 
+    return new Date( dateToCheck ).getMonth()  === new Date().getMonth() ; 
+}
+
+function fetchTransaction( id , callback ){
+    $.ajax({
+        url: app.SERVICE_URL + "transactions/" + id, 
+        success: function( response ){  
+            callback( response );
+        }
+    });
+}
+
+var currentMoment;
+function clock(){  
+    if( typeof(m) === "undefined" ){
+        currentMoment = new moment();
+    }
+    
+    $.observable( app.data ).setProperty( "current_date" ,  currentMoment.format("MMMM Do YYYY") ); 
+    $.observable( app.data ).setProperty( "current_time" ,  currentMoment.format("h:mm:ss A") ); 
+    currentMoment.add( 1 , 'seconds' );
+} 
+setInterval( clock , 1000 );
 
 function setAjaxHeaders(){ 
     $.ajaxSetup({ 

@@ -1,131 +1,101 @@
-<div class="container-fluid">
-
-    <div class="text-center">
-        <h1>Warehouse Screen</h1><span class="pull-right"><a onclick="app.navigate( 'screen_selection' )"><i class="fas fa-undo"></i></a></span>
-    </div>
-
-    <div class="row" id="info_screen_warehouse_header"> 
-
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="img-rounded media bg-light">  
-                    <div class="media-body">  
-                        <div class="row">
-                                <h2 style="margin:5px;" class="text-center">Repairs</h2> 
-                            <div class="col-xs-6">
-                                <h3 class="text-center">Today</h3>
-                                <h3 class="text-center">0</h3>
-                            </div>
-                            <div class="col-xs-6">
-                                <h3 class="text-center">This Month</h3>
-                                <h3 class="text-center">0</h3>
-                            </div>
-                        </div>
-                    </div> 
-                </div>
-            </div><br />
+ 
+    <div class="row bg-info" style="margin-bottom: 20px; "> 
+        <div class="col-xs-3"> 
+            <h2 class="text-center">
+                <span class="pull-left">
+                    <button class="btn btn-lg btn-block btn-default" onclick="localStorage.removeItem( 'pallet_connect_hud_lastScreen' ); app.navigate( 'warehouse_selection' )"><i class="fas fa-undo"></i></button>
+                </span>
+                Summary
+            </h2> 
         </div>
-
-        <div class="col-sm-6">
-            <div class="card">
-                <div class="img-rounded media bg-light">  
-                    <div class="media-body">  
-                        <div class="row">
-                            <h2 style="margin:5px;" class="text-center">Pallets Sold</h2> 
-                            <div class="col-xs-6">
-                                <h3 class="text-center">Today</h3>
-                                <h3 class="text-center">0</h3>
-                            </div>
-                            <div class="col-xs-6">
-                                <h3 class="text-center">This Month</h3>
-                                <h3 class="text-center">0</h3>
-                            </div>
-                        </div>
-                    </div> 
-                </div>
-            </div> <br />
-        </div>   
-
-        <div class="col-sm-6">
-            <div class="card">
-                <div class="img-rounded media bg-light">  
-                    <div class="media-body">  
-                        <div class="row">
-                            <h2 style="margin:5px;" class="text-center">Pallets Received</h2> 
-                            <div class="col-xs-6">
-                                <h3 class="text-center">Today</h3>
-                                <h3 class="text-center">0</h3>
-                            </div>
-                            <div class="col-xs-6">
-                                <h3 class="text-center">This Month</h3>
-                                <h3 class="text-center">0</h3>
-                            </div>
-                        </div>
-                    </div> 
-                </div>
-            </div><br />
-        </div>
-
+        <div class="col-xs-9">
+            <div class="col-xs-6">
+                <h2>
+                {^{if localStorage.warehouse_screen_type = 'recycled' }}
+                    Supplier Requests:
+                {^{else }}
+                    Purchase Orders: 
+                {{/if}}
+                {^{:warehouse.supplier_pending_count}}
+                <span class="pull-right">{^{:warehouse.supplier_pending_qty}}</span></h2> 
+            </div>
+            <div class="col-xs-6">
+                <h2>Customer Orders: {^{:warehouse.customer_pending_count}} 
+                <span class="pull-right" >{^{:warehouse.customer_pending_qty}}</span></h2>
+            </div> 
+        </div> 
     </div>   
-
-    <div class="col-xs-6">
-        <div class="row">
-            <div class="col-xs-12">
-                <h2>Customer Orders<span class="pull-right" >00</span></h2>
-            </div> 
-        </div>
-        <div > 
+    <div class="row">
+        <div class="col-xs-3"> 
+            <!-- <h2>Summary</h2> -->
+            {^{for warehouse.summary}}
+                {{include tmpl="template_warehouse_summary_card"/}}
+            {{/for}}  
             <div class="card" style="margin-bottom:10px;">
-                <div class="img-rounded media bg-light"> 
-                    <div class="media-left media-middle text-center" style="width:18%;">
-                        <h3> <br />Pallets</h3>  
-                    </div> 
-                    <div class="media-body"> 
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <h3>Name</h3>
-                        </div>
-                        <div class="col-xs-12"> 
-                            <br /><b>NOTES:</b><br /> 
-                        </div>
-                    </div>
-                    </div>   
-                </div>
-            </div> 
-        </div>
-    </div> 
-
-    <div class="col-xs-6">
-        <div class="row">
-            <div class="col-xs-12">
-                <h2>Supplier Requests<span class="pull-right">00</span></h2>
-            </div> 
-        </div>
-        <div style="position:absolute">
-            <div>
-                <div class="original"> 
-                    <div class="card" style="margin-bottom:10px;">
-                        <div class="img-rounded media bg-light"> 
-                            <div class="media-left media-middle text-center" style="width:18%;">
-                                <h3><br />Pallets</h3>
-                            </div> 
-                            <div class="media-body"> 
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <h3>Name</h3>
-                                    </div>
-                                    <div class="col-xs-12"> 
-                                        <br /><b>NOTES:</b><br /> 
-                                    </div>
-                                </div>
-                            </div>  
+                <div class="media bg-light todayMonth" style="box-shadow: none;">  
+                    <div class="media-body">  
+                        <div class="row">
+                            <h2 style="margin:5px;" class="text-center">
+                                {^{:current_date}}<hr style="width:50%; margin-left:25%;" />
+                                {^{:current_time}}
+                            </h2> 
                         </div>
                     </div> 
                 </div>
             </div>
+        </div> 
+        <div class="col-xs-9">
+            <div class="col-xs-6">
+                <!-- <h2>Supplier Requests<span class="pull-right">{^{:warehouse.supplier_pending}}</span></h2> -->
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="2" nowrap>Due In Days</th>
+                            <th>Name</th>
+                            <th class="text-right">Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {^{for warehouse.pending_transactions.rows}}
+                            {^{if future_indicator == -1 || ftt_indicator == -1}}
+                                {{include tmpl="template_warehouse_pending_card"/}}
+                            {{/if}}
+                        {{/for}} 
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td class="Text-right">Total</td>
+                            <td class="text-right">{^{:warehouse.supplier_pending_qty}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div> 
+            <div class="col-xs-6">
+                <!-- <h2>Customer Orders<span class="pull-right" >{^{:warehouse.customer_pending}}</span></h2> --> 
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="2" nowrap>Due In Days</th>
+                            <th>Name</th>
+                            <th class="text-right">Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {^{for warehouse.pending_transactions.rows}}
+                            {^{if future_indicator == 1 || ftt_indicator == 1}}
+                                {{include tmpl="template_warehouse_pending_card"/}}
+                            {{/if}}
+                        {{/for}} 
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td class="Text-right">Total</td>
+                            <td class="text-right">{^{:warehouse.customer_pending_qty}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
-    </div> 
-    
-</div>   
-
-   
+    </div>  

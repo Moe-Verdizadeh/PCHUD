@@ -1,5 +1,6 @@
 <div class="container">
     <div class="row">
+        <br /> 
         <div class="col-xs-12"><img src="img/logo.png" style="width:100%;" /></div>
     </div>
     <div class="row padded-top-3x">
@@ -7,15 +8,18 @@
     </div>
 
     <div class="row padded-top-3x">
-        <div class="col-xs-offset-3 col-xs-6 text-left"><a onclick="app.navigate( 'warehouse_screen' )" class="btn btn-lg btn-block btn-primary">WAREHOUSE</a></div>
+        <div class="col-xs-offset-3 col-xs-6 text-left">
+            <button onclick="app.navigate( 'warehouse_selection' )" class="btn btn-lg btn-block btn-default">WAREHOUSE</button>
+        </div>
     </div>
 
-    <!-- <div class="row padded-top-3x">
-            <div class="col-xs-offset-3 col-xs-6 text-left"><a class="btn btn-lg btn-block btn-primary">ACCOUNTS</a></div>
-    </div> -->
+    <div class="row padded-top-3x">
+        
+            <!-- <div class="col-xs-offset-3 col-xs-6 text-left"><a class="btn btn-lg btn-block btn-primary">ACCOUNTS</a></div> -->
+    </div>
 
     <div class="row padded-top-3x">
-            <div class="col-xs-offset-3 col-xs-6 text-left"><a onclick="app.navigate( 'manager_screen' )" class="btn btn-lg btn-block btn-primary">MANAGER</a></div>
+            <!-- <div class="col-xs-offset-3 col-xs-6 text-left"><a onclick="app.navigate( 'manager_screen' )" class="btn btn-lg btn-block btn-primary">MANAGER</a></div> -->
     </div> 
 
     <br />
@@ -23,6 +27,8 @@
     <br />
 
     <div class="row padded-top-3x">
-            <div class="col-xs-offset-4 col-xs-4 text-left"><a onclick="app.navigate( 'home' )" class="btn btn-lg btn-block btn-primary">Logout</a></div>
+            <div class="col-xs-offset-4 col-xs-4 text-left">
+                <button onclick="app.logout(); app.navigate( 'home' )" class="btn btn-lg btn-block btn-default">Logout</button>
+            </div>
     </div> 
 </div>

@@ -1,15 +1,20 @@
 var app = {
     SERVICE_URL: "https://testappapi.palletconnect.com/api/",
-    pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , "manager_screen" ],
+    pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , 'warehouse_selection' , "manager_screen"  ],
+    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' ],
     codeTimer: null,
+    refreshTimer: null,
+    transactionsChannel: null,
+    nextRefresh: 0, 
     data: {
-        token: null,
-        app_id: null,
+        current_time: 0,
+        current_date: 0,
         code: null,
+        warehouse: { pending_transactions : { rows: [] } , summary: [] },
     },
     navigate: function( page , object ){
         if( typeof( object ) === "undefined" ){
-            object = {};
+            object = app.data;
         }
         $.templates[ page ].link( "#app", object );
         if( typeof( window[ page ] ) === "function" ){
@@ -30,11 +35,31 @@ var app = {
     onDeviceReady: function() {
         socketHelper.connect( function(){
             console.log( "We are connected and ready to go." );
+            var screensToLoad = app.pages.length + app.templates.length;
+            var loadedScreens = 0;
+
+            $.each( app.templates , function( ind , page ){
+                $.ajax( {
+                    url : "templates/" + page + ".html" , 
+                    success: function( content ){
+                        $.templates( "template_" + page , content ); 
+                        loadedScreens++; 
+                        if( loadedScreens == screensToLoad ){
+                            console.log( "There's No Place Like Home" );
+                            app.navigate( "home" );
+                        }
+                    }
+                });
+            });
+
             $.each( app.pages , function( ind , page ){
                 app.lazyGetTemplate( page ).then( function( pageLoaded ){
-                    console.log( pageLoaded + " Was loaded into the $.templates" );
-                    if( pageLoaded == "home" ){
-                        app.navigate( "home" , app.data );
+                    console.log( pageLoaded + " Was loaded into the $.templates" ); 
+                    loadedScreens++; 
+                    // console.log( loadedScreens , screensToLoad);
+                    if( loadedScreens == screensToLoad ){
+                        console.log( "There's No Place Like Home" );
+                        app.navigate( "home" );
                     }
                 });
             });
@@ -53,16 +78,60 @@ var app = {
                     url : "pages/" + name + ".html" , 
                     success: function( content ){
                         $.templates( name , content ); 
-                        deferred.resolve( name ); 
+                        setTimeout( function(){
+                            deferred.resolve( name ); 
+                        } , 200 );
                     }
                 });
             });
         }
         return deferred.promise();
-    }
+    },
+    logout: function(){
+        localStorage.clear();
+        app.navigate( "home" );  
+   }
 };
 
 app.initialize();
+
+
+function isToday( dateToCheck){ 
+    return new Date( dateToCheck ).getDate()  === new Date().getDate() ; 
+}
+function isThisMonth( dateToCheck ){ 
+    return new Date( dateToCheck ).getMonth()  === new Date().getMonth() ; 
+}
+
+function fetchTransaction( id , callback ){
+    $.ajax({
+        url: app.SERVICE_URL + "transactions/" + id, 
+        success: function( response ){  
+            callback( response );
+        }
+    });
+}
+
+var currentMoment;
+function clock(){  
+    if( typeof(m) === "undefined" ){
+        currentMoment = new moment();
+    }
+    
+    $.observable( app.data ).setProperty( "current_date" ,  currentMoment.format("MMMM Do YYYY") ); 
+    $.observable( app.data ).setProperty( "current_time" ,  currentMoment.format("h:mm:ss A") ); 
+    currentMoment.add( 1 , 'seconds' );
+} 
+setInterval( clock , 1000 );
+
+function setAjaxHeaders(){ 
+    $.ajaxSetup({ 
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader( "Authorization"   , "Bearer: " + localStorage.pallet_connect_hud_token );
+            xhr.setRequestHeader( "app-id"          , localStorage.pallet_connect_hud_app_id );
+        }
+    }); 
+}
 
 var socketHelper = {
     pusher: null,
@@ -72,8 +141,9 @@ var socketHelper = {
             //2d5761b92c6087a05b95 // TEST
             //927b44b96dbff529ff88 // DEV
         });   
-        socketHelper.pusher.connection.bind( 'connecting'    ,  socketHelper.connecting );
-        socketHelper.pusher.connection.bind( 'connected'     ,  callback );
+        socketHelper.pusher.connection.bind ( 'connecting'              ,  socketHelper.connecting );
+        socketHelper.pusher.connection.bind ( 'connected'               ,  callback );
+       
         // socketHelper.data_channel = pusher.subscribe( 'hud_app_data.RAND' );
         //when verified token and id 
     },
@@ -87,3 +157,18 @@ var socketHelper = {
         alert( "SOMETHING BROKE, PLEASE CHECK YOUR CONNECTION AND RESTART THE APP" );
     },
 }
+
+
+
+// an extension to format numbers
+// call like this 
+/*
+    1234..format();           // "1,234"
+    12345..format(2);         // "12,345.00"
+    123456.7.format(3, 2);    // "12,34,56.700"
+    123456.789.format(2, 4);  // "12,3456.79"
+*/
+Number.prototype.format = function(n, x) {
+    var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
+    return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
+};
