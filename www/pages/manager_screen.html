@@ -1,13 +1,17 @@
  
     
-    <div class="row">    
-        <span class="col-xs-1 pull left"><button class="btn btn-lg btn-block btn-default " onclick="localStorage.removeItem( 'pallet_connect_hud_lastScreen' ); app.navigate( 'screen_selection' )"><i class="fas fa-undo"></i></button></span> 
-    </div> 
+<div class="row">    
+    <span class="col-xs-1 pull left"><button class="btn btn-lg btn-block btn-default " onclick="localStorage.removeItem( 'pallet_connect_hud_lastScreen' ); app.navigate( 'screen_selection' )"><i class="fas fa-undo"></i></button></span> 
+</div> 
 
-    <div class="row">
-        <div id="containerChart"> 
-        </div>
-    </div>   
+<!-- 12 month chart -->
+
+<div class="row">
+    <div id="containerChart"> 
+    </div>
+</div> 
+
+<!-- 60 days pie chart -->
 
 <div class="row">  
     {^{for warehouse.summary}}
@@ -16,146 +20,85 @@
         {{/if}}
     {{/for}}  
 </div> 
- 
-<div class="row">
-    {{include tmpl="template_manager_variations_card"/}} 
-</div>
+
+ <!-- variations -->
 
 <div class="row">
-    <div class="col-xs-6">
-        <h2>
-            Customer Orders: 
-        </h2>
-    </div>
+    {^{for warehouse.summary}}
+        {^{if !is_build}}
+            {{include tmpl="template_manager_variations_card"/}} 
+        {{/if}}
+    {{/for}}
+</div> 
+
+ <!-- Pending Transactions -->
+
+<div class="row">
     <div class="col-xs-6">
         <h2>
             Supplier Orders: 
+            <span class="pull-right">{^{:warehouse.supplier_pending_qty}}</span>
         </h2> 
+    </div>
+    <div class="col-xs-6">
+        <h2>
+            Customer Orders: 
+            <span class="pull-right" >{^{:warehouse.customer_pending_qty}}</span>
+        </h2>
+    </div>
+</div> 
+<div class="row">
+    <div class="col-xs-6"> 
+        <table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="2" nowrap>Due In Days</th>
+                    <th>Name</th>
+                    <th class="text-right">Qty</th>
+                </tr>
+            </thead>
+            <tbody>
+                {^{for warehouse.pending_transactions.rows}}
+                    {^{if future_indicator == -1 || ftt_indicator == -1}}
+                        {{include tmpl="template_warehouse_pending_card"/}}
+                    {{/if}}
+                {{/for}} 
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="Text-right">Total</td>
+                    <td class="text-right">{^{:warehouse.supplier_pending_qty}}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div> 
+    <div class="col-xs-6"> 
+        <table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="2" nowrap>Due In Days</th>
+                    <th>Name</th>
+                    <th class="text-right">Qty</th>
+                </tr>
+            </thead>
+            <tbody>
+                {^{for warehouse.pending_transactions.rows}}
+                    {^{if future_indicator == 1 || ftt_indicator == 1}}
+                        {{include tmpl="template_warehouse_pending_card"/}}
+                    {{/if}}
+                {{/for}} 
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="Text-right">Total</td>
+                    <td class="text-right">{^{:warehouse.customer_pending_qty}}</td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>
     
 
-    
-    <!-- <div class="clearfix"><br /></div> 
-    <div class="row">    
-        <div class="col-xs-4">
-            <div class="card">
-                <div class="img-rounded media bg-light padded-2x-all" style="box-shadow:none;">  
-                    <div class="media-body">  
-                        <h3 class="text-center" style="margin-top:0">Sales</h3>  
-                        <div class="row">
-                            <div class="col-xs-12" >
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        Today:
-                                    </div>
-                                    <div class="col-xs-4 text-right">
-                                        <span data-link="todaysData.outgoing.qty">{^{:is_sales}}</span> pallets
-                                    </div>
-                                    <div class="col-xs-4 text-right">
-                                        <span data-link="appSettings.CURRENCY_SYMBOL"></span> 
-                                        <span data-link="todaysData.outgoing.revenue">0</span>
-                                    </div>
-                                </div> 
-                            </div>  
-                            <div class="clearfix"><br /><br /></div>  
-                            <div class="col-xs-12" >
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        This Month:
-                                    </div>
-                                    <div class="col-xs-4 text-right">
-                                        <span data-link="thisMonthsData.outgoing.qty">0</span> pallets
-                                    </div>
-                                    <div class="col-xs-4 text-right">
-                                        <span data-link="appSettings.CURRENCY_SYMBOL"></span> 
-                                        <span data-link="thisMonthsData.outgoing.revenue">0</span>
-                                    </div>
-                                </div> 
-                            </div>  
-                        </div>
-                        <div id="info_screen_sales_60_days_type_comparison"></div>
-                    </div>
-                </div>
-            </div> 
-        </div>
-
-        <div class="col-xs-4">
-            <div class="card">
-                <div class="img-rounded media bg-light padded-2x-all" style="box-shadow:none;">  
-                    <div class="media-body">  
-                        <h3 class="text-center" style="margin-top:0">Purchases</h3>  
-                        <div class="row">
-                            <div class="col-xs-12" >
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        Today:
-                                    </div>
-                                    <div class="col-xs-4 text-right">
-                                        <span data-link="todaysData.incoming.qty">0</span> pallets
-                                    </div>
-                                    <div class="col-xs-4 text-right">
-                                        <span data-link="appSettings.CURRENCY_SYMBOL"></span> 
-                                        <span data-link="todaysData.incoming.revenue">0</span>
-                                    </div>
-                                </div> 
-                            </div>  
-                            <div class="clearfix"><br /><br /></div>  
-                            <div class="col-xs-12" >
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        This Month:
-                                    </div>
-                                    <div class="col-xs-4 text-right">
-                                        <span data-link="thisMonthsData.incoming.qty">0</span> pallets
-                                    </div>
-                                    <div class="col-xs-4 text-right">
-                                        <span data-link="appSettings.CURRENCY_SYMBOL"></span> 
-                                        <span data-link="thisMonthsData.incoming.revenue">0</span>
-                                    </div>
-                                </div> 
-                            </div>  
-                        </div>
-                        <div id="info_screen_purchases_60_days_type_comparison"></div>
-                    </div>
-                </div>
-            </div> 
-        </div>
-
-
-
-        <div class="col-xs-4">
-            <div class="card">
-                <div class="img-rounded media bg-light padded-2x-all" style="box-shadow:none;">  
-                    <div class="media-body">  
-                        <h3 class="text-center" style="margin-top:0">Repairs</h3>  
-                        <div class="row">
-                            <div class="col-xs-12" >
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        Today:
-                                    </div>
-                                    <div class="col-xs-8 text-right">
-                                        <span data-link="repairs.today.qty">0</span> pallets
-                                    </div> 
-                                </div> 
-                            </div>  
-                            <div class="clearfix"><br /><br /></div>  
-                            <div class="col-xs-12" >
-                                <div class="row">
-                                    <div class="col-xs-4">
-                                        This Month:
-                                    </div>
-                                    <div class="col-xs-8 text-right">
-                                        <span data-link="repairs.thisMonth.qty">0</span> pallets
-                                    </div> 
-                                </div> 
-                            </div>  
-                        </div>
-                        <div id="info_screen_repairs_60_days_type_comparison"></div>
-                    </div>
-                </div>
-            </div> 
-        </div> 
-    </div>
-    <div class="clearfix"><br /></div>   -->
+  

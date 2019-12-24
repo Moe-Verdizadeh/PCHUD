@@ -1,18 +1,45 @@
-<div class="card" style="margin-bottom:10px;">
-    <div class="media bg-light todayMonth" style="box-shadow: none;">  
-        <div class="media-body"> 
-            <div class="row">
-                <div class="col-xs-4 text-center">
-                    Supplier Variations
-                </div>
-                <div class="col-xs-4 text-center">
-                    Production Variations
-                </div>
-                <div class="col-xs-4 text-center">
-                    Customer Variations
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="col-xs-4">
+    <div class="card" style="margin-bottom:10px;">
+        <div class="media bg-light" style="box-shadow: none;">  
+            <div class="media-body">  
+                <h3 style="margin:5px;" class="text-center">
+                    {^{if is_purchases}} 
+                        Supplier Variations 
+                    {{else is_sales}}
+                        Customer Variations 
+                    {{else is_repair}}
+                        Production Variations 
+                    {{/if}} 
+                </h3>   
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="text-right">QTY Variations</th>
+                            <th class="text-right">% Variations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
 
+                                {^{:name}}
+                            </td>
+                            <td class="text-right">
+                                {^{:qty}}
+                            </td>
+                            <td class="text-right">
+                                percent
+                            </td>
+                        </tr> 
+                    </tbody>
+                </table> 
+            </div>
+        </div> 
+    </div>
+</div> 
+ 
+
+
+
+ 

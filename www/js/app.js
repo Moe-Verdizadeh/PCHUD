@@ -1,3 +1,8 @@
+ /* 
+ *     Copyright (C) 2019 Mohammad Khanverdizadeh  < MoKode >
+ *     < www.mokode.ca >  
+ *     Designed and developed for Pallet Pickup Canada (C)
+ */
 var app = {
     SERVICE_URL: "https://testappapi.palletconnect.com/api/",
     pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , 'warehouse_selection' , "manager_screen"  ],
@@ -10,7 +15,7 @@ var app = {
         current_time: 0,
         current_date: 0,
         code: null,
-        warehouse:  { pending_transactions : { rows: [] } , summary: [] }, 
+        warehouse:  { pending_transactions : { rows: [] } , summary: [] },
     },
     navigate: function( page , object ){
         if( typeof( object ) === "undefined" ){
