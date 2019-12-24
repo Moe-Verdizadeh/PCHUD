@@ -1,7 +1,7 @@
 var app = {
     SERVICE_URL: "https://testappapi.palletconnect.com/api/",
     pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , 'warehouse_selection' , "manager_screen"  ],
-    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' ],
+    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' , 'manager_variations_card' , 'manager_piecharts' ],
     codeTimer: null,
     refreshTimer: null,
     transactionsChannel: null,
@@ -10,7 +10,7 @@ var app = {
         current_time: 0,
         current_date: 0,
         code: null,
-        warehouse: { pending_transactions : { rows: [] } , summary: [] },
+        warehouse:  { pending_transactions : { rows: [] } , summary: [] }, 
     },
     navigate: function( page , object ){
         if( typeof( object ) === "undefined" ){

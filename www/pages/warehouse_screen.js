@@ -3,23 +3,11 @@ var repairs     = {};
 var builds      = {};
 var sales       = {};
 var purchases   = {};
+ 
 function warehouse_screen(){ 
     
     localStorage.pallet_connect_hud_lastScreen = 'warehouse_screen';
-    $.ajax({
-        url: app.SERVICE_URL + "monthlyValues",
-        data: {
-            vendors:    0,
-            new:        ( localStorage.warehouse_screen_type == "new"      ? 1 : 0 ),
-            recycled:   ( localStorage.warehouse_screen_type == "recycled" ? 1 : 0 ),
-        },
-        success: function ( response ){ 
-            $.observable( app.data.warehouse.summary ).refresh( [
-                { is_build: 0 , is_sales: 1 , is_purchases: 0 , is_repair: 0 , today: response.data.today.outgoing.qty , this_month: response.data.thisMonth.outgoing.qty }, 
-                { is_build: 0 , is_sales: 0 , is_purchases: 1 , is_repair: 0 , today: response.data.today.incoming.qty , this_month: response.data.thisMonth.incoming.qty },
-                { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repair: 1 , today: response.data.repairs.today.qty  , this_month: response.data.repairs.thisMonth.qty  },
-                { is_build: 1 , is_sales: 0 , is_purchases: 0 , is_repair: 0 , today: response.data.builds.today.qty   , this_month: response.data.builds.thisMonth.qty}, 
-            ] ); 
+    warehouse_screen_obj.loadData( function ( response ){ 
             $.each( app.data.warehouse.summary , function ( ind , data ){
                 if( data.is_repair ){
                     repairs     = data;
@@ -32,22 +20,41 @@ function warehouse_screen(){
                 }
             });
             warehouse_screen_obj.loadTransactions( [ 4 , 2 ] );
-            console.log( "Monthly Values " , response ); 
-            
+            console.log( "Monthly Values " , response );  
             if( app.refreshTimer !== null ){
                 clearTimeout( app.refreshTimer );
             }
             app.nextRefresh = new Date().getTime() + 3600000;
             app.refreshTimer = setTimeout( warehouse_screen , 3600000 );
             $.observable( app.data.warehouse.pending_transactions.rows ).observeAll(  warehouse_screen_obj.updateTotals ); 
-        },
-        error: function( error ){
-            console.log( "ERROR FETCHING DATA " + error );
-        }
-    });  
+    });
 } 
 
 var warehouse_screen_obj = { 
+    loadData: function( callback ){
+        $.ajax({
+            url: app.SERVICE_URL + "monthlyValues",
+            data: {
+                vendors:    0,
+                new:        ( localStorage.warehouse_screen_type == "new"      ? 1 : 0 ),
+                recycled:   ( localStorage.warehouse_screen_type == "recycled" ? 1 : 0 ),
+            },
+            success: function ( response ){ 
+                $.observable( app.data.warehouse.summary ).refresh( [
+                    { is_build: 0 , is_sales: 1 , is_purchases: 0 , is_repair: 0 , today: response.data.today.outgoing  , this_month: response.data.thisMonth.outgoing }, 
+                    { is_build: 0 , is_sales: 0 , is_purchases: 1 , is_repair: 0 , today: response.data.today.incoming  , this_month: response.data.thisMonth.incoming },
+                    { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repair: 1 , today: response.data.repairs.today   , this_month: response.data.repairs.thisMonth  },
+                    { is_build: 1 , is_sales: 0 , is_purchases: 0 , is_repair: 0 , today: response.data.builds.today    , this_month: response.data.builds.thisMonth }, 
+                ] ); 
+                if( typeof( callback ) == "function" ){
+                    callback( response );
+                }
+            }, 
+            error: function( error ){
+                console.log( "ERROR FETCHING DATA " + error );
+            }
+        });  
+    },
     updateTotals: function(){
         var supplier_total = "" + 0;
         var customer_total = "" + 0;
