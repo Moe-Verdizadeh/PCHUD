@@ -1,7 +1,116 @@
+ 
+      
+<button style="position: absolute; bottom: 10px; left:10px; width:100px; z-index:99999" class="btn btn-lg btn-default " onclick="localStorage.removeItem( 'pallet_connect_hud_lastScreen' ); app.navigate( 'screen_selection' )"><i class="fas fa-undo"></i></button>
 
-<div class="container">
-    <div class="card text-center"><h1>Manager Screen</h1><span class="pull-right"><a onclick="app.navigate( 'screen_selection' )"><i class="fas fa-undo"></i></a></span></div>
-    <div>
-            COMING SOON..... 
+
+<div class="row">
+    <div class="col-xs-2"> 
+        <!-- <h2>Summary</h2> -->
+        {^{for summary}}
+            {{include tmpl="template_manager_summary_card"/}}
+        {{/for}}  
+        <div class="card" style="margin-bottom:10px;">
+            <div class="media bg-light todayMonth" style="box-shadow: none;">  
+                <div class="media-body">  
+                    <div class="row">
+                        <h3 style="margin:10px;" class="text-center">
+                            {^{:current_date}}<hr style="width:50%; margin-left:25%;" />
+                            {^{:current_time}}
+                        </h3> 
+                    </div>
+                </div> 
+            </div>
+        </div> 
+
+    </div> 
+    <div class="col-xs-10">
+        <!-- 60 days pie chart --> 
+        <div class="row">  
+            <div class="col-xs-6">
+                <div id="containerChart"></div>
+            </div>
+            {^{for manager.piecharts}}
+                {{include tmpl="template_manager_piechart"/}}
+            {{/for}}  
+        </div> 
+
+        <!-- variations -->
+
+        <div class="row">
+            <!-- <div class="col-xs-3"></div> -->
+                {^{for manager.variationSummary.rows}} 
+                    {{include tmpl="template_manager_variations_card"/}} 
+                {{/for}}
+        </div> 
+
+        <!-- Pending Transactions -->
+
+        <div class="row">
+            <div class="col-xs-6">
+                <h2>
+                    Supplier Orders: 
+                    <span class="pull-right">{^{:warehouse.supplier_pending_qty}}</span>
+                </h2> 
+            </div>
+            <div class="col-xs-6">
+                <h2>
+                    Customer Orders: 
+                    <span class="pull-right" >{^{:warehouse.customer_pending_qty}}</span>
+                </h2>
+            </div>
+        </div> 
+        <div class="row">
+            <div class="col-xs-6"> 
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="2" nowrap>Due In Days</th>
+                            <th>Name</th>
+                            <th class="text-right">Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {^{for warehouse.pending_transactions.rows}}
+                            {^{if future_indicator == -1 || ftt_indicator == -1}}
+                                {{include tmpl="template_warehouse_pending_card"/}}
+                            {{/if}}
+                        {{/for}} 
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td class="Text-right">Total</td>
+                            <td class="text-right">{^{:warehouse.supplier_pending_qty}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div> 
+            <div class="col-xs-6"> 
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="2" nowrap>Due In Days</th>
+                            <th>Name</th>
+                            <th class="text-right">Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {^{for warehouse.pending_transactions.rows}}
+                            {^{if future_indicator == 1 || ftt_indicator == 1}}
+                                {{include tmpl="template_warehouse_pending_card"/}}
+                            {{/if}}
+                        {{/for}} 
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td class="Text-right">Total</td>
+                            <td class="text-right">{^{:warehouse.customer_pending_qty}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
-</div> 
+</div>
+  
