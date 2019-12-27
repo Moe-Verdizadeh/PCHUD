@@ -4,10 +4,17 @@ function manager_screen(){
     localStorage.pallet_connect_hud_lastScreen = 'manager_screen';   
     manager_screen_obj.init();
 } 
+app.data.manager.piecharts = [
+    { label: "SALES" , containerId: "containerChartPieSales" },
+    { label: "PURCHASES" , containerId: "containerChartPiePurchases" },
+    // { label: "REPAIRS" , containerId: "containerChartPieRepairs" },
+];
+
 var manager_screen_obj = {
     ajaxData:       { vendors: 0, new: 0, recycled: 1 },
     palletData:     {}, 
-    init: function(){
+    init: function(){ 
+        app.pageRefresh( 60 , manager_screen_obj.init );
         console.log( "init manager screen..." );
         manager_screen_obj.palletData = { sales: { name: '' , data : [] }, purchases: { name: '' , data : [] } , repairs : { name: '' , data : [] } };
         manager_screen_obj.variationData = { }
@@ -16,7 +23,8 @@ var manager_screen_obj = {
                 manager_screen_obj.loadPalletChartData( function(){
                     manager_screen_obj.renderPalletChart( 'containerChartPieSales'      , manager_screen_obj.palletData.sales );
                     manager_screen_obj.renderPalletChart( 'containerChartPiePurchases'  , manager_screen_obj.palletData.purchases );
-                    manager_screen_obj.renderPalletChart( 'containerChartPieRepairs'    , manager_screen_obj.palletData.repairs );
+                    // manager_screen_obj.renderPalletChart( 'containerChartPieRepairs'    , manager_screen_obj.palletData.repairs );
+                    warehouse_screen_obj.loadTransactions( [ 4 , 2 ] );
                 });
             })
         });
@@ -25,7 +33,7 @@ var manager_screen_obj = {
     monthlyValues: function(){  
         return  new Promise(
                     function (resolve, reject) {    
-                         warehouse_screen_obj.loadData( resolve ) 
+                         warehouse_screen_obj.loadData( resolve ); 
                     }
         );
     },
@@ -41,7 +49,7 @@ var manager_screen_obj = {
                         credits: 'disabled',
                         chart:{
                             renderTo: 'containerChart',
-                            type: 'line',
+                            type: 'column',
                             height: 300,
                         },
                         title: { 
@@ -143,13 +151,13 @@ var manager_screen_obj = {
             url: app.SERVICE_URL + "dashboardVariations",
             data: manager_screen_obj.ajaxData,
             success: function( response ){
-                console.log( "Fetching variation" ,  response.topVariations ); 
- 
-                // var repbad ={ bad: { name: "" , data: [] } }; 
-                // $.each( response.topVariations.repairs.bad , function( index , row){
-                //     repbad.bad.data.push( {name: row.name  } );
-                // }); 
-                // $.observable(response.topVariations.repairs.data).setProperty( "name" ,  repbad.name );   
+                console.log( "Fetching variation" ,  response.topVariations );  
+                var variationData = [];
+                variationData.push( { label: 'CUSTOMERS' , data: response.topVariations.customers });
+                variationData.push( { label: 'SUPPLIERS' , data: response.topVariations.suppliers });
+                // variationData.push( { label: 'REPAIRS' , data: response.topVariations.repairs  }); 
+                $.observable( app.data.manager.variationSummary.rows ).refresh( variationData );  
+                console.log(variationData);
             },
             error: function( error ){
                 console.log( "ERROR FETCHING DATA " + error );

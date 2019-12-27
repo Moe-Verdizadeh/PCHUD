@@ -4,9 +4,9 @@
  *     Designed and developed for Pallet Pickup Canada (C)
  */
 var app = {
-    SERVICE_URL: "https://testappapi.palletconnect.com/api/",
+    SERVICE_URL: "https://appapi.palletconnect.com/api/",
     pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , 'warehouse_selection' , "manager_screen"  ],
-    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' , 'manager_variations_card' , 'manager_piecharts' ],
+    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' , 'manager_variations_card' , 'manager_piechart' , 'manager_summary_card' , ],
     codeTimer: null,
     refreshTimer: null,
     transactionsChannel: null,
@@ -15,7 +15,16 @@ var app = {
         current_time: 0,
         current_date: 0,
         code: null,
-        warehouse:  { pending_transactions : { rows: [] } , summary: [] },
+        warehouse:  { pending_transactions : { rows: [] } }, 
+        manager: { piecharts: [], variationSummary: { rows: [] } },
+        summary: [] ,
+    },
+    pageRefresh: function( timeInMinutes , callback ){
+        if( app.refreshTimer !== null ){
+            clearTimeout( app.refreshTimer );
+        }
+        app.nextRefresh = new Date().getTime() + timeInMinutes * 60000;
+        app.refreshTimer = setTimeout( callback , app.nextRefresh );
     },
     navigate: function( page , object ){
         if( typeof( object ) === "undefined" ){
@@ -141,10 +150,11 @@ function setAjaxHeaders(){
 var socketHelper = {
     pusher: null,
     connect: function( callback ){ 
-        socketHelper.pusher = new Pusher( "2d5761b92c6087a05b95" , {
+        socketHelper.pusher = new Pusher( "d40605f5f27a0a317fc8" , {
             cluster: "us2"
             //2d5761b92c6087a05b95 // TEST
             //927b44b96dbff529ff88 // DEV
+            //d40605f5f27a0a317fc8 // PRODUCTION
         });   
         socketHelper.pusher.connection.bind ( 'connecting'              ,  socketHelper.connecting );
         socketHelper.pusher.connection.bind ( 'connected'               ,  callback );

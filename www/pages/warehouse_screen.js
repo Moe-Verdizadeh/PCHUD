@@ -8,7 +8,7 @@ function warehouse_screen(){
     
     localStorage.pallet_connect_hud_lastScreen = 'warehouse_screen';
     warehouse_screen_obj.loadData( function ( response ){ 
-            $.each( app.data.warehouse.summary , function ( ind , data ){
+            $.each( app.data.summary , function ( ind , data ){
                 if( data.is_repair ){
                     repairs     = data;
                 }else if( data.is_build ){
@@ -21,11 +21,12 @@ function warehouse_screen(){
             });
             warehouse_screen_obj.loadTransactions( [ 4 , 2 ] );
             console.log( "Monthly Values " , response );  
-            if( app.refreshTimer !== null ){
-                clearTimeout( app.refreshTimer );
-            }
-            app.nextRefresh = new Date().getTime() + 3600000;
-            app.refreshTimer = setTimeout( warehouse_screen , 3600000 );
+            // if( app.refreshTimer !== null ){
+            //     clearTimeout( app.refreshTimer );
+            // }
+            // app.nextRefresh = new Date().getTime() + 3600000;
+            // app.refreshTimer = setTimeout( warehouse_screen , 3600000 );
+            app.pageRefresh( 60 , warehouse_screen );
             $.observable( app.data.warehouse.pending_transactions.rows ).observeAll(  warehouse_screen_obj.updateTotals ); 
     });
 } 
@@ -40,7 +41,7 @@ var warehouse_screen_obj = {
                 recycled:   ( localStorage.warehouse_screen_type == "recycled" ? 1 : 0 ),
             },
             success: function ( response ){ 
-                $.observable( app.data.warehouse.summary ).refresh( [
+                $.observable( app.data.summary ).refresh( [
                     { is_build: 0 , is_sales: 1 , is_purchases: 0 , is_repair: 0 , today: response.data.today.outgoing  , this_month: response.data.thisMonth.outgoing }, 
                     { is_build: 0 , is_sales: 0 , is_purchases: 1 , is_repair: 0 , today: response.data.today.incoming  , this_month: response.data.thisMonth.incoming },
                     { is_build: 0 , is_sales: 0 , is_purchases: 0 , is_repair: 1 , today: response.data.repairs.today   , this_month: response.data.repairs.thisMonth  },
