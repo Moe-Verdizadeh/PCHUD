@@ -139,7 +139,7 @@ var manager_screen_obj = {
                 },
                 series: {
                     animation: {
-                        duration: 3000
+                        duration: 1000
                     }
                 }
             },
