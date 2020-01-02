@@ -29,7 +29,7 @@ function code_verified( dataFromServer ) {
     clearTimeout( app.codeTimer ); 
     localStorage.pallet_connect_hud_app_id  = dataFromServer.app_id;
     localStorage.pallet_connect_hud_token   = dataFromServer.token;  
-    localStorage.pallet_connect_hud_site    = dataFromServer.site;  
+    localStorage.pallet_connect_hud_site    = dataFromServer.site;
     setAjaxHeaders();
     $.ajax({
         url: app.SERVICE_URL + "code_confirmed/" + app.data.code,

@@ -9,6 +9,9 @@
   "installed_plugins": {
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "com.hud.palletconnect"
+    },
+    "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "com.hud.palletconnect"
     }
   },
   "dependent_plugins": {}

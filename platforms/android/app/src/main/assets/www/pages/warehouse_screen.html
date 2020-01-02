@@ -26,37 +26,23 @@
         </div> 
     </div>   
     <div class="row">
-        <div class="col-xs-3"> 
+        <div class="col-xs-3">  
             <!-- <h2>Summary</h2> -->
             {^{for summary}}
                 {{include tmpl="template_warehouse_summary_card"/}}
-            {{/for}}  
-            <div class="card" style="margin-bottom:10px;">
-                <div class="media bg-light todayMonth" style="box-shadow: none;">  
-                    <div class="media-body">  
-                        <div class="row">
-                            <h2 style="margin:10px;" class="text-center">
-                                {^{:current_date}}<hr style="width:50%; margin-left:25%;" />
-                                {^{:current_time}}
-                            </h2> 
-                        </div>
-                    </div> 
-                </div>
-            </div>
-            <!-- weather -->
-            <!-- <div class="card" style="margin-bottom:10px;">
-                <div class="media bg-light todayMonth" style="box-shadow: none;">  
-                    <div class="media-body">  
-                        <div class="row">
-                            <h2 style="margin:5px;" class="text-center">
-                                weather<hr style="width:50%; margin-left:25%;" />
-                            </h2> 
-                        </div>
-                    </div> 
-                </div>
-            </div> -->
-
+            {{/for}}
+            {{include tmpl="template_weather"/}} 
         </div> 
+
+        <!-- <h3 style="margin:10px;" class="text-center">
+            {^{:current_date}}<hr style="width:50%; margin-left:25%; margin-top:10px ;" />
+            {^{:current_time}} 
+        </h3> 
+        <h3><span class="pull-left" style="margin-left:5%;">{^{:city_name}}</span><span class="pull-right" style="margin-right: 25px;">{^{:current_weather}} &#8451;</span></h3>
+        <div>
+            <h4 class="pull-right" style="margin-right: 25px;">Feels {^{:feels_like}} &#8451;</h4> 
+        </div> -->
+
         <div class="col-xs-9">
             <div class="col-xs-6"> 
                 <table class="table table-condensed table-bordered">

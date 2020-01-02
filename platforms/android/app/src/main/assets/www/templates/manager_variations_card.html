@@ -3,11 +3,11 @@
         <table class="table table-condensed table-bordered">
             <thead>
                 <tr>
-                    <td colspan="3"><h4>{^{:label}}</h4></td>
+                    <td colspan="3"><h3>{^{:label}}</h3></td>
                 </tr>
                 <tr>
                     <th>Name</th>
-                    <th class="text-right">QTY Variation</th>
+                    <!-- <th class="text-right">QTY Variation</th> -->
                     <th class="text-right">% Variation</th>
                 </tr>
             </thead>
@@ -15,14 +15,14 @@
                 {^{for data.bad}}
                     <tr>
                         <td> {^{:name}}</td>
-                        <td class="text-right">{^{:qtyChange}}</td>
+                        <!-- <td class="text-right">{^{:qtyChange}}</td> -->
                         <td class="text-right">{^{:qtyPercentChange}} % <span class="fa fa-caret-down text-danger"></span></td>
                     </tr> 
                 {{/for}}
                 {^{for data.good}}
                     <tr>
                         <td> {^{:name}}</td>
-                        <td class="text-right">{^{:qtyChange}}</td>
+                        <!-- <td class="text-right">{^{:qtyChange}}</td> -->
                         <td class="text-right">{^{:qtyPercentChange}} % <span class="fa fa-caret-up text-success"></span></td>
                     </tr> 
                 {{/for}}

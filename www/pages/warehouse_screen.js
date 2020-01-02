@@ -8,26 +8,26 @@ function warehouse_screen(){
     
     localStorage.pallet_connect_hud_lastScreen = 'warehouse_screen';
     warehouse_screen_obj.loadData( function ( response ){ 
-            $.each( app.data.summary , function ( ind , data ){
-                if( data.is_repair ){
-                    repairs     = data;
-                }else if( data.is_build ){
-                    builds      = data;
-                }else if( data.is_purchases ){
-                    purchases   = data;
-                }else if( data.is_sales ){
-                    sales       = data;
-                }
-            });
-            warehouse_screen_obj.loadTransactions( [ 4 , 2 ] );
-            console.log( "Monthly Values " , response );  
-            // if( app.refreshTimer !== null ){
-            //     clearTimeout( app.refreshTimer );
-            // }
-            // app.nextRefresh = new Date().getTime() + 3600000;
-            // app.refreshTimer = setTimeout( warehouse_screen , 3600000 );
-            app.pageRefresh( 60 , warehouse_screen );
-            $.observable( app.data.warehouse.pending_transactions.rows ).observeAll(  warehouse_screen_obj.updateTotals ); 
+        $.each( app.data.summary , function ( ind , data ){
+            if( data.is_repair ){
+                repairs     = data;
+            }else if( data.is_build ){
+                builds      = data;
+            }else if( data.is_purchases ){
+                purchases   = data;
+            }else if( data.is_sales ){
+                sales       = data;
+            }
+        });
+        warehouse_screen_obj.loadTransactions( [ 4 , 2 ] );
+        console.log( "Monthly Values " , response );  
+        // if( app.refreshTimer !== null ){
+        //     clearTimeout( app.refreshTimer );
+        // }
+        // app.nextRefresh = new Date().getTime() + 3600000;
+        // app.refreshTimer = setTimeout( warehouse_screen , 3600000 );
+        app.pageRefresh( 60 , warehouse_screen );
+        $.observable( app.data.warehouse.pending_transactions.rows ).observeAll(  warehouse_screen_obj.updateTotals );
     });
 } 
 
@@ -38,7 +38,7 @@ var warehouse_screen_obj = {
             data: {
                 vendors:    0,
                 new:        ( localStorage.warehouse_screen_type == "new"      ? 1 : 0 ),
-                recycled:   ( localStorage.warehouse_screen_type == "recycled" ? 1 : 0 ),
+                recycled:   ( localStorage.warehouse_screen_type == "recycled" ? 1 : 0 )
             },
             success: function ( response ){ 
                 $.observable( app.data.summary ).refresh( [
@@ -53,9 +53,9 @@ var warehouse_screen_obj = {
             }, 
             error: function( error ){
                 console.log( "ERROR FETCHING DATA " + error );
-            }
+            },
         });  
-    },
+    }, 
     updateTotals: function(){
         var supplier_total = "" + 0;
         var customer_total = "" + 0;
@@ -84,8 +84,8 @@ var warehouse_screen_obj = {
             data: {
                 grouped: true,
                 deleted: 0,
-                filter: { "db_cr_indicator": 0,"on_hold": 0 },
-                sort: 'transaction_date',
+                filter: JSON.stringify( { db_cr_indicator: 0, on_hold: 0 } ),
+                sort: 'transaction_date_time',
                 order: 'asc',
                 include_stock_items: true,
                 isQueue: true,

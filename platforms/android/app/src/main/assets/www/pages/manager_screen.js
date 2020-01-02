@@ -18,6 +18,7 @@ var manager_screen_obj = {
         console.log( "init manager screen..." );
         manager_screen_obj.palletData = { sales: { name: '' , data : [] }, purchases: { name: '' , data : [] } , repairs : { name: '' , data : [] } };
         manager_screen_obj.variationData = { }
+        manager_screen_obj.fetchingVariationData(); 
         manager_screen_obj.monthlyValues().then( function(){
             manager_screen_obj.yearDataChart().then( function(){
                 manager_screen_obj.loadPalletChartData( function(){
@@ -25,16 +26,16 @@ var manager_screen_obj = {
                     manager_screen_obj.renderPalletChart( 'containerChartPiePurchases'  , manager_screen_obj.palletData.purchases );
                     // manager_screen_obj.renderPalletChart( 'containerChartPieRepairs'    , manager_screen_obj.palletData.repairs );
                     warehouse_screen_obj.loadTransactions( [ 4 , 2 ] );
+                    $.observable( app.data.warehouse.pending_transactions.rows ).observeAll(  warehouse_screen_obj.updateTotals );
                 });
             })
         });
-        manager_screen_obj.fetchingVariationData(); 
     },  
     monthlyValues: function(){  
         return  new Promise(
-                    function (resolve, reject) {    
-                         warehouse_screen_obj.loadData( resolve ); 
-                    }
+            function (resolve, reject) {    
+                    warehouse_screen_obj.loadData( resolve ); 
+            }
         );
     },
     yearDataChart: function(){ 
@@ -44,12 +45,12 @@ var manager_screen_obj = {
                 url: app.SERVICE_URL + "fetchChartData",
                 data: manager_screen_obj.ajaxData,
                 success: function ( response ){ 
-                    // console.log( "Response" , response );     
+                    console.log( "Response" , response );     
                     var chart = Highcharts.chart( {
                         credits: 'disabled',
                         chart:{
                             renderTo: 'containerChart',
-                            type: 'column',
+                            type: 'area',
                             height: 300,
                         },
                         title: { 
@@ -66,9 +67,10 @@ var manager_screen_obj = {
                             }
                         },
                         yAxis: {
-                            title: {
-                                text: 'Dollars'
-                            }, 
+                            visible: false,
+                            // title: {
+                            //     text: 'Dollars'
+                            // }, 
                         }, 
                         plotOptions: {
                             series: {
@@ -77,7 +79,7 @@ var manager_screen_obj = {
                                 }
                             }
                         }, 
-                        series: response.thisYear.profitChartData,
+                        series: response.thisYear.profitChartData.reverse(),
                     });
                     resolve();
                 },
@@ -123,7 +125,7 @@ var manager_screen_obj = {
                 plotBorderWidth: null,
                 plotShadow: false,
                 type: 'pie',
-                height: 300, 
+                height: 250, 
             }, 
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
@@ -139,7 +141,7 @@ var manager_screen_obj = {
                 },
                 series: {
                     animation: {
-                        duration: 3000
+                        duration: 1000
                     }
                 }
             },
@@ -156,8 +158,7 @@ var manager_screen_obj = {
                 variationData.push( { label: 'CUSTOMERS' , data: response.topVariations.customers });
                 variationData.push( { label: 'SUPPLIERS' , data: response.topVariations.suppliers });
                 // variationData.push( { label: 'REPAIRS' , data: response.topVariations.repairs  }); 
-                $.observable( app.data.manager.variationSummary.rows ).refresh( variationData );  
-                console.log(variationData);
+                $.observable( app.data.manager.variationSummary.rows ).refresh( variationData );   
             },
             error: function( error ){
                 console.log( "ERROR FETCHING DATA " + error );

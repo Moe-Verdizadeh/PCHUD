@@ -6,12 +6,14 @@
 var app = {
     SERVICE_URL: "https://appapi.palletconnect.com/api/",
     pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , 'warehouse_selection' , "manager_screen"  ],
-    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' , 'manager_variations_card' , 'manager_piechart' , 'manager_summary_card' , ],
+    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' , 'manager_variations_card' , 'manager_piechart' , 'manager_summary_card' , 'weather' ],
     codeTimer: null,
     refreshTimer: null,
     transactionsChannel: null,
     nextRefresh: 0, 
+    units: "metric",
     data: {
+        weather: { loading: true },
         current_time: 0,
         current_date: 0,
         code: null,
@@ -34,6 +36,7 @@ var app = {
         if( typeof( window[ page ] ) === "function" ){
             window[ page ]();
         } 
+        
     },
     // Application Constructor
     initialize: function() {
@@ -77,6 +80,9 @@ var app = {
                     }
                 });
             });
+// setTimeout( function(){
+            app.set_location().then( app.set_current_weather );
+// },3000);
         });
     },
     lazyGetTemplate: function(name) {
@@ -104,11 +110,52 @@ var app = {
     logout: function(){
         localStorage.clear();
         app.navigate( "home" );  
-   }
-};
-
+   },
+   set_location: function(){    
+       console.log( "SET THE LOCATION..." );
+        return  new Promise(
+        function( resolve, reject ){ 
+                    navigator.geolocation.getCurrentPosition( function( response ){
+                        app.geoLocation = response.coords;
+                        console.log( "geolocation" , response.coords );
+                        resolve();
+                    })
+                }); 
+    }, 
+    set_current_weather: function(){ 
+        if( typeof( app.geoLocation ) !== "undefined" ){ 
+            $.ajax({
+                dataType: "jsonp",
+                url:  'https://api.openweathermap.org/data/2.5/weather',
+                data: {
+                    lat: app.geoLocation.latitude,
+                    lon: app.geoLocation.longitude,
+                    units: app.units,
+                    APPID: 'a8c479f116d01420795531e3ffe354b6'
+                },
+                success: function( response ){  
+                    $.observable( app.data ).setProperty( "city_name" , response.name );  
+                    $.observable( app.data.weather ).setProperty( "current_temp"        , response.main.temp.toFixed(0) ); 
+                    $.observable( app.data.weather ).setProperty( "feels_like"          , response.main.feels_like.toFixed(0) ); 
+                    $.observable( app.data.weather ).setProperty( "temp_max"            , response.main.temp_max.toFixed(0) ); 
+                    $.observable( app.data.weather ).setProperty( "temp_min"            , response.main.temp_min.toFixed(0) ); 
+                    $.observable( app.data.weather ).setProperty( "weather_id"          , response.weather[0].id );   
+                    $.observable( app.data.weather ).setProperty( "icon"                , response.weather[0].icon );  
+                    $.observable( app.data.weather ).setProperty( "icon_src"            , 'http://openweathermap.org/img/wn/' + response.weather[0].icon + '@2x.png'  );  
+                    
+                    $.observable( app.data.weather ).setProperty( "weather_description" , response.weather[0].description ); 
+                    $.observable( app.data.weather ).setProperty( "loading"        , false ); 
+                    console.log( "Current Weather" , response );
+                },
+                error: function( error ){
+                    console.log( "ERROR FETCHING DATA " + error );
+                },
+            });
+            setInterval( app.set_current_weather , 600000 ); 
+        }
+    }
+}; 
 app.initialize();
-
 
 function isToday( dateToCheck){ 
     return new Date( dateToCheck ).getDate()  === new Date().getDate() ; 
@@ -124,16 +171,16 @@ function fetchTransaction( id , callback ){
             callback( response );
         }
     });
-}
+} 
+ 
 
 var currentMoment;
 function clock(){  
     if( typeof(m) === "undefined" ){
         currentMoment = new moment();
-    }
-    
-    $.observable( app.data ).setProperty( "current_date" ,  currentMoment.format("MMMM Do YYYY") ); 
-    $.observable( app.data ).setProperty( "current_time" ,  currentMoment.format("h:mm:ss A") ); 
+    } 
+    $.observable( app.data ).setProperty( "current_date" ,  currentMoment.format("MMM Do") ); 
+    $.observable( app.data ).setProperty( "current_time" ,  currentMoment.format("h:mm A") ); 
     currentMoment.add( 1 , 'seconds' );
 } 
 setInterval( clock , 1000 );

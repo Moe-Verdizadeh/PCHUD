@@ -2,7 +2,7 @@
     <div class="media bg-light todayMonth" style="box-shadow: none;">  
         <div class="media-body">  
             <div class="row">
-                    <h2 style="margin:5px;" class="text-center">
+                    <h3 style="margin:5px;" class="text-center">
                         {^{if is_purchases}} 
                             Pallets Received
                         {{else is_sales}}
@@ -12,14 +12,14 @@
                         {{else is_build}}
                             Builds
                         {{/if}} 
-                    </h2> 
+                    </h3> 
                 <div class="col-xs-6">
-                    <h3 class="text-center">Today</h3>
-                    <h3 class="text-center">{^{:today.qty}}</h3>
+                    <h4 class="text-center">Today</h4>
+                    <h4 class="text-center">{^{:today.qty}}</h4>
                 </div>
                 <div class="col-xs-6">
-                    <h3 class="text-center">This Month</h3>
-                    <h3 class="text-center">{^{:this_month.qty}}</h3>
+                    <h4 class="text-center">This Month</h4>
+                    <h4 class="text-center">{^{:this_month.qty}}</h4>
                 </div>
             </div>
         </div> 
