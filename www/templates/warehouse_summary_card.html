@@ -1,27 +1,25 @@
-<div class="card" style="margin-bottom:10px;">
-    <div class="media bg-light todayMonth" style="box-shadow: none;">  
-        <div class="media-body">  
-            <div class="row">
-                    <h3 style="margin:5px;" class="text-center">
-                        {^{if is_purchases}} 
-                            Pallets Received
-                        {{else is_sales}}
-                            Pallets Sold
-                        {{else is_repair}}
-                            Repairs
-                        {{else is_build}}
-                            Builds
-                        {{/if}} 
-                    </h3> 
-                <div class="col-xs-6">
-                    <h4 class="text-center">Today</h4>
-                    <h4 class="text-center">{^{:today.qty}}</h4>
-                </div>
-                <div class="col-xs-6">
-                    <h4 class="text-center">This Month</h4>
-                    <h4 class="text-center">{^{:this_month.qty}}</h4>
-                </div>
-            </div>
-        </div> 
-    </div>
+<div class="bordered" style="margin-bottom:10px;">
+    <div class="row">  
+        <div class="col-xs-12">
+            <h4 style="padding:0; margin:0;" class="text-center bg-info">
+                {^{if is_purchases}} 
+                    Pallets Received
+                {{else is_sales}}
+                    Pallets Sold
+                {{else is_repair}}
+                    Repairs
+                {{else is_build}}
+                    Builds
+                {{/if}} 
+            </h4> 
+        </div>
+        <div class="col-xs-6">
+            <h5 class="text-center">Today</h5>
+            <h5 class="text-center">{^{:today.qty}}</h5>
+        </div>
+        <div class="col-xs-6">
+            <h5 class="text-center">{^{:~current_month}}</h5>
+            <h5 class="text-center">{^{:this_month.qty}}</h5>
+        </div>
+    </div>  
 </div>

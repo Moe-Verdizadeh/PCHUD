@@ -5,7 +5,6 @@ var sales       = {};
 var purchases   = {};
  
 function warehouse_screen(){ 
-    
     localStorage.pallet_connect_hud_lastScreen = 'warehouse_screen';
     warehouse_screen_obj.loadData( function ( response ){ 
         $.each( app.data.summary , function ( ind , data ){
@@ -21,11 +20,6 @@ function warehouse_screen(){
         });
         warehouse_screen_obj.loadTransactions( [ 4 , 2 ] );
         console.log( "Monthly Values " , response );  
-        // if( app.refreshTimer !== null ){
-        //     clearTimeout( app.refreshTimer );
-        // }
-        // app.nextRefresh = new Date().getTime() + 3600000;
-        // app.refreshTimer = setTimeout( warehouse_screen , 3600000 );
         app.pageRefresh( 60 , warehouse_screen );
         $.observable( app.data.warehouse.pending_transactions.rows ).observeAll(  warehouse_screen_obj.updateTotals );
     });
@@ -34,7 +28,7 @@ function warehouse_screen(){
 var warehouse_screen_obj = { 
     loadData: function( callback ){
         $.ajax({
-            url: app.SERVICE_URL + "monthlyValues",
+            url: config.SERVICE_URL + "monthlyValues",
             data: {
                 vendors:    0,
                 new:        ( localStorage.warehouse_screen_type == "new"      ? 1 : 0 ),
@@ -80,7 +74,7 @@ var warehouse_screen_obj = {
 
     loadTransactions: function( types ){
         $.ajax({
-            url: app.SERVICE_URL + "transactions",
+            url: config.SERVICE_URL + "transactions",
             data: {
                 grouped: true,
                 deleted: 0,
@@ -257,5 +251,3 @@ function daysDiff( dateToUse , useAbsolute ){
 function addingIndex(){
 
 } 
-
-

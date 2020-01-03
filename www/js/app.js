@@ -1,21 +1,19 @@
  /* 
- *     Copyright (C) 2019 Mohammad Khanverdizadeh  < MoKode >
- *     < www.mokode.ca >  
+ *     Copyright (C) 2019 Mohammad Khanverdizadeh  < Pallet Connect >
+ *     < www.palletconnect.com >  
  *     Designed and developed for Pallet Pickup Canada (C)
- */
-var app = {
-    SERVICE_URL: "https://appapi.palletconnect.com/api/",
-    pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , 'warehouse_selection' , "manager_screen"  ],
-    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' , 'manager_variations_card' , 'manager_piechart' , 'manager_summary_card' , 'weather' ],
+ */ 
+var app = {  
     codeTimer: null,
     refreshTimer: null,
     transactionsChannel: null,
     nextRefresh: 0, 
-    units: "metric",
     data: {
+        is_metric: typeof( localStorage.is_metric ) !== "undefined" ?  parseInt( localStorage.is_metric ) : 1,
         weather: { loading: true },
         current_time: 0,
         current_date: 0,
+        summary_date: 0,
         code: null,
         warehouse:  { pending_transactions : { rows: [] } }, 
         manager: { piecharts: [], variationSummary: { rows: [] } },
@@ -28,15 +26,9 @@ var app = {
         app.nextRefresh = new Date().getTime() + timeInMinutes * 60000;
         app.refreshTimer = setTimeout( callback , app.nextRefresh );
     },
-    navigate: function( page , object ){
-        if( typeof( object ) === "undefined" ){
-            object = app.data;
-        }
-        $.templates[ page ].link( "#app", object );
-        if( typeof( window[ page ] ) === "function" ){
-            window[ page ]();
-        } 
-        
+    navigate: function( page ){
+        window.location = "#" + page;
+        return false;  
     },
     // Application Constructor
     initialize: function() {
@@ -52,10 +44,10 @@ var app = {
     onDeviceReady: function() {
         socketHelper.connect( function(){
             console.log( "We are connected and ready to go." );
-            var screensToLoad = app.pages.length + app.templates.length;
+            var screensToLoad = config.PAGE_FILES.length + config.TEMPLATE_FILES.length;
             var loadedScreens = 0;
 
-            $.each( app.templates , function( ind , page ){
+            $.each( config.TEMPLATE_FILES , function( ind , page ){
                 $.ajax( {
                     url : "templates/" + page + ".html" , 
                     success: function( content ){
@@ -69,7 +61,7 @@ var app = {
                 });
             });
 
-            $.each( app.pages , function( ind , page ){
+            $.each( config.PAGE_FILES , function( ind , page ){
                 app.lazyGetTemplate( page ).then( function( pageLoaded ){
                     console.log( pageLoaded + " Was loaded into the $.templates" ); 
                     loadedScreens++; 
@@ -80,9 +72,12 @@ var app = {
                     }
                 });
             });
-// setTimeout( function(){
+            $.observe( app.data, "is_metric", function(){
+                console.log( "is_metic changed" );
+                localStorage.setItem( "is_metric" , app.data.is_metric );
+                app.set_current_weather();
+            });
             app.set_location().then( app.set_current_weather );
-// },3000);
         });
     },
     lazyGetTemplate: function(name) {
@@ -121,17 +116,24 @@ var app = {
                         resolve();
                     })
                 }); 
-    }, 
+    },
+    toggle_units: function(){  
+        $.observable( app.data ).setProperty( "is_metric" , app.data.is_metric == 1 ? 0 : 1  );
+    },
     set_current_weather: function(){ 
-        if( typeof( app.geoLocation ) !== "undefined" ){ 
+        console.log( "setting weather..." );
+        if( typeof( app.geoLocation ) !== "undefined" ){
+            console.log( "geolocation is set." );
+            console.log( "is_metric: " , app.data.is_metric );
+            $.observable( app.data ).setProperty( "units_icon" , app.data.is_metric ? "&#8451;" : '&#8457;' );
             $.ajax({
                 dataType: "jsonp",
                 url:  'https://api.openweathermap.org/data/2.5/weather',
                 data: {
                     lat: app.geoLocation.latitude,
                     lon: app.geoLocation.longitude,
-                    units: app.units,
-                    APPID: 'a8c479f116d01420795531e3ffe354b6'
+                    units: app.data.is_metric ? "metric" : "imperial",
+                    APPID: config.WEATHER_APP_ID
                 },
                 success: function( response ){  
                     $.observable( app.data ).setProperty( "city_name" , response.name );  
@@ -142,7 +144,6 @@ var app = {
                     $.observable( app.data.weather ).setProperty( "weather_id"          , response.weather[0].id );   
                     $.observable( app.data.weather ).setProperty( "icon"                , response.weather[0].icon );  
                     $.observable( app.data.weather ).setProperty( "icon_src"            , 'http://openweathermap.org/img/wn/' + response.weather[0].icon + '@2x.png'  );  
-                    
                     $.observable( app.data.weather ).setProperty( "weather_description" , response.weather[0].description ); 
                     $.observable( app.data.weather ).setProperty( "loading"        , false ); 
                     console.log( "Current Weather" , response );
@@ -157,6 +158,15 @@ var app = {
 }; 
 app.initialize();
 
+
+$(window).on('hashchange', function() { 
+    var page = window.location.hash.substr(1)
+    $.templates[ page ].link( "#app", app.data );
+    if( typeof( window[ page ] ) === "function" ){
+        window[ page ]();
+    } 
+});
+
 function isToday( dateToCheck){ 
     return new Date( dateToCheck ).getDate()  === new Date().getDate() ; 
 }
@@ -166,21 +176,21 @@ function isThisMonth( dateToCheck ){
 
 function fetchTransaction( id , callback ){
     $.ajax({
-        url: app.SERVICE_URL + "transactions/" + id, 
+        url: config.SERVICE_URL + "transactions/" + id, 
         success: function( response ){  
             callback( response );
         }
     });
 } 
  
-
 var currentMoment;
 function clock(){  
     if( typeof(m) === "undefined" ){
         currentMoment = new moment();
     } 
-    $.observable( app.data ).setProperty( "current_date" ,  currentMoment.format("MMM Do") ); 
-    $.observable( app.data ).setProperty( "current_time" ,  currentMoment.format("h:mm A") ); 
+    $.observable( app.data ).setProperty( "current_month"   ,  currentMoment.format("MMM") ); 
+    $.observable( app.data ).setProperty( "current_date"    ,  currentMoment.format("MMM Do") ); 
+    $.observable( app.data ).setProperty( "current_time"    ,  currentMoment.format("h:mm A") ); 
     currentMoment.add( 1 , 'seconds' );
 } 
 setInterval( clock , 1000 );
@@ -197,17 +207,9 @@ function setAjaxHeaders(){
 var socketHelper = {
     pusher: null,
     connect: function( callback ){ 
-        socketHelper.pusher = new Pusher( "d40605f5f27a0a317fc8" , {
-            cluster: "us2"
-            //2d5761b92c6087a05b95 // TEST
-            //927b44b96dbff529ff88 // DEV
-            //d40605f5f27a0a317fc8 // PRODUCTION
-        });   
-        socketHelper.pusher.connection.bind ( 'connecting'              ,  socketHelper.connecting );
-        socketHelper.pusher.connection.bind ( 'connected'               ,  callback );
-       
-        // socketHelper.data_channel = pusher.subscribe( 'hud_app_data.RAND' );
-        //when verified token and id 
+        socketHelper.pusher = new Pusher( config.PUSHER_KEY , { cluster: "us2" });   
+        socketHelper.pusher.connection.bind ( 'connecting' ,  socketHelper.connecting );
+        socketHelper.pusher.connection.bind ( 'connected'  ,  callback );
     },
     connecting: function(){
         console.log( "Waiting for connection..." );
@@ -220,16 +222,6 @@ var socketHelper = {
     },
 }
 
-
-
-// an extension to format numbers
-// call like this 
-/*
-    1234..format();           // "1,234"
-    12345..format(2);         // "12,345.00"
-    123456.7.format(3, 2);    // "12,34,56.700"
-    123456.789.format(2, 4);  // "12,3456.79"
-*/
 Number.prototype.format = function(n, x) {
     var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
     return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');

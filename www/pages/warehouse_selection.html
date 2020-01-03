@@ -1,29 +1,30 @@
 <div class="row">
-    <div class="col-xs-12"><img src="img/logo.png" style="width:100%;" /></div>
+    <br /> 
+    <div class="col-xs-12 text-center"><img src="img/logo.png" style="width:75%;" /></div>
 </div>
-<div class="row padded-top-3x">
-    <br />
+<div class="row padded-top-3x"> 
     <div class="col-xs-12 text-center padded-all-3x"><h1>SELECT PALLET TYPES</h1></div>
-</div>
-
+</div> 
+ 
 <div class="row padded-top-3x">
-    <div class="col-xs-offset-3 col-xs-6 text-left">
-        <button onclick="localStorage.warehouse_screen_type = 'recycled'; app.navigate( 'warehouse_screen' )" class="btn btn-lg btn-block btn-default"> <b>RECYCLED PALLETS</b></button>
+    <div class="col-xs-offset-3 col-xs-3">
+        <button onclick="localStorage.warehouse_screen_type = 'recycled'; app.navigate( 'warehouse_screen' )" class="btn btn-lg btn-block btn-default" style="padding-top:50px; padding-bottom:50px;">
+            <i class="fas fa-2x fa-recycle"></i><br /><br />
+            <b>RECYCLED PALLETS</b>
+        </button>
     </div>
-</div>
-
-<div class="row padded-top-3x">
-    <div class="col-xs-offset-3 col-xs-6 text-left">
-        <button onclick="localStorage.warehouse_screen_type = 'new'; app.navigate( 'warehouse_screen' )" class="btn btn-lg btn-block btn-default"> <b>NEW PALLETS</b></button>
+    <div class="col-xs-3">
+        <button onclick="localStorage.warehouse_screen_type = 'new'; app.navigate( 'warehouse_screen' )" class="btn btn-lg btn-block btn-default" style="padding-top:50px; padding-bottom:50px;">
+            <i class="far fa-2x fa-pallet"></i><br /><br />
+            <b>NEW PALLETS</b>
+        </button>
     </div>
-</div>
+</div>  
 
-<br />
-<br />
-<br />
+<div style="position: fixed; bottom: 10px; left:10px; width:100px;">
+    <button onclick="app.navigate( 'screen_selection' )" class="btn btn-lg btn-block btn-default" autofocus> <b><span class="fa fa-arrow-left"></span> Back</b></button>
+</div>  
 
-<div class="row padded-top-3x">
-        <div class="col-xs-offset-4 col-xs-4 text-left">
-            <button onclick="app.navigate( 'screen_selection' )" class="btn btn-lg btn-block btn-default"> <b>Screen Selection</b></button>
-        </div>
+<div style="position: fixed; bottom: 10px; right:10px; width:200px;">
+    {{include tmpl="template_weather"/}} 
 </div>

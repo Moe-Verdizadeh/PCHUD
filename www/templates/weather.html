@@ -1,44 +1,41 @@
-<div class="card" style="margin-bottom:10px;">
-    <div class="media todayMonth" style="box-shadow: none;">  
-        <div class="media-body"> 
-            <div class="row" data-link="visible{:weather.loading}">
-                <div class="col-xs-12 text-center">
-                    <span class="fa fa-3x fa-spin fa-circle-notch"></span><br />
-                    Loading Weather Information
-                </div>
-            </div>
-            <div class="row" data-link="visible{:!weather.loading}">
-                <div class="col-xs-12">
-                    <h2 style="padding:0; margin:0;" class="bg-info text-center">{^{:city_name}}</h2>
-                </div>
-            </div>
-            <div class="row" data-link="visible{:!weather.loading}">
-                <div class="col-xs-6">
-                    <b style="font-size: 1.8em;">{^{:current_date}}</b> 
-                </div>
-                <div class="col-xs-6 text-right">
-                    <b style="font-size: 1.8em;">{^{:current_time}}</b>
-                </div> 
-            </div>
-            <div class="row" data-link="visible{:!weather.loading}">
-                <hr style="width:50%; margin-left:25%; margin-top: 10px; margin-bottom: 0px;"/>  
-            </div>
-            <div class="row" data-link="visible{:!weather.loading}">
-                <div class="text-center col-xs-6">
-                    <!-- <i data-link="class{:'owf owf-5x owf-' + weather.weather_id}"></i>  -->
-                    <img style="width: 80%;" data-link="src{:weather.icon_src}" />
-                </div> 
-                <div class="col-xs-6 text-center">
-                    <h3>{^{:weather.current_temp}} &#8451;</h3>
-                    <b>{^{:weather.temp_min}} &#8451; / {^{:weather.temp_max}} &#8451;</b>
-                </div> 
-            </div>
-            <div class="row" data-link="visible{:!weather.loading}">
-                <div class="text-center col-xs-12">
-                    <h4>{^{:weather.weather_description}}</h4> 
-                    <b>Feels Like {^{:weather.feels_like}} &#8451;</b>
-                </div>
-            </div>
+<div class="bordered" style="margin-bottom:10px;;"> 
+    <div class="row" data-link="visible{:weather.loading}">
+        <div class="col-xs-12 text-center">
+            <span class="fa fa-3x fa-spin fa-circle-notch"></span><br />
+            Loading Weather Information
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <h3 style="padding:2; margin:0;" class="bg-info text-center"><i class="fad fa-map-marker-alt"></i>  {^{:city_name}}</h3>
+        </div>
+    </div>
+    <div class="row" data-link="visible{:!weather.loading}">
+        <div class="col-xs-6">
+            <b style="font-size: 1.3em; margin-left: 5px;">{^{:current_date}}</b> 
+        </div>
+        <div class="col-xs-6 text-right">
+            <b style="font-size: 1.3em; margin-right: 5px;">{^{:current_time}}</b>
         </div> 
+    </div>
+    <div class="row" data-link="visible{:!weather.loading}">
+        <hr style="width:50%; margin-left:25%; margin-top: 10px; margin-bottom: 0px;"/>  
+    </div>
+    <div class="row" data-link="visible{:!weather.loading}">
+        <div class="text-center col-xs-6"> 
+            <img style="width: 80%;" data-link="src{:weather.icon_src}" />
+        </div> 
+        <div class="col-xs-6 text-center">
+            <h4>{^{:weather.current_temp}} {^{:units_icon}}</h4>
+            <b>{^{:weather.temp_min}} {^{:units_icon}} / {^{:weather.temp_max}} {^{:units_icon}}</b>
+        </div> 
+    </div>
+    <div class="row" data-link="visible{:!weather.loading}">
+        <div class="text-center col-xs-12">
+            <h5>{^{:weather.weather_description}}</h5> 
+            <b>Feels Like {^{:weather.feels_like}} {^{:units_icon}}</b>
+        </div>
     </div> 
 </div>
+

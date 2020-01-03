@@ -5,7 +5,6 @@ var sales       = {};
 var purchases   = {};
  
 function warehouse_screen(){ 
-    
     localStorage.pallet_connect_hud_lastScreen = 'warehouse_screen';
     warehouse_screen_obj.loadData( function ( response ){ 
         $.each( app.data.summary , function ( ind , data ){

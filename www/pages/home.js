@@ -1,7 +1,7 @@
 function home(){
     if( typeof( localStorage.pallet_connect_hud_token ) === "undefined" ){
         $.ajax({
-            url: app.SERVICE_URL + "code_generator",
+            url: config.SERVICE_URL + "code_generator",
             success: function( response ){
                 app.codeTimer = setTimeout( home, response.validUntil - response.createdAt ); 
                 $.observable( app.data ).setProperty( "code" , response.code );
@@ -18,8 +18,7 @@ function home(){
         var screen = "screen_selection"; 
         if( typeof( localStorage.pallet_connect_hud_lastScreen ) !== "undefined" ){
             screen =  localStorage.pallet_connect_hud_lastScreen;
-        }
-        // console.log( "111" ); 
+        } 
         app.navigate( screen );
         console.log( "GO TO " + screen ); 
     }
@@ -32,7 +31,7 @@ function code_verified( dataFromServer ) {
     localStorage.pallet_connect_hud_site    = dataFromServer.site;
     setAjaxHeaders();
     $.ajax({
-        url: app.SERVICE_URL + "code_confirmed/" + app.data.code,
+        url: config.SERVICE_URL + "code_confirmed/" + app.data.code,
         success: function ( response ){
             console.log( "CODE CLEARED DATA RESPONSE " + response ); 
             setTimeout( function(){ app.navigate( "screen_selection" ); } , 1000 );

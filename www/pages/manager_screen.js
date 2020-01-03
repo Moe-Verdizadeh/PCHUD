@@ -5,8 +5,8 @@ function manager_screen(){
     manager_screen_obj.init();
 } 
 app.data.manager.piecharts = [
-    { label: "SALES" , containerId: "containerChartPieSales" },
-    { label: "PURCHASES" , containerId: "containerChartPiePurchases" },
+    { is_sales: 1, is_purchases: 0, label: "SALES" , containerId: "containerChartPieSales" },
+    { is_sales: 0, is_purchases: 1, label: "PURCHASES" , containerId: "containerChartPiePurchases" },
     // { label: "REPAIRS" , containerId: "containerChartPieRepairs" },
 ];
 
@@ -42,7 +42,7 @@ var manager_screen_obj = {
         return  new Promise(
             function (resolve, reject) {    
             $.ajax({
-                url: app.SERVICE_URL + "fetchChartData",
+                url: config.SERVICE_URL + "fetchChartData",
                 data: manager_screen_obj.ajaxData,
                 success: function ( response ){ 
                     console.log( "Response" , response );     
@@ -50,34 +50,31 @@ var manager_screen_obj = {
                         credits: 'disabled',
                         chart:{
                             renderTo: 'containerChart',
-                            type: 'area',
-                            height: 300,
+                            type: 'areaspline',
+                            height: 218,
                         },
                         title: { 
-                            text: '12 Months'
+                            text: '12 Months',
+
                         },  
+                        legend: {
+                            layout: 'vertical',
+                            align: 'left',
+                            verticalAlign: 'top',
+                            x: 0,
+                            y: 0,
+                            floating: true,
+                            borderWidth: 1, 
+                        },
                         xAxis: {
                             type: 'datetime',
                             dateTimeLabelFormats: { 
                                 month: '%e. %b',
                                 year: '%b'
-                            },
-                            title: {
-                                text: 'Date'
-                            }
+                            }, 
                         },
                         yAxis: {
                             visible: false,
-                            // title: {
-                            //     text: 'Dollars'
-                            // }, 
-                        }, 
-                        plotOptions: {
-                            series: {
-                                marker: {
-                                    enabled: true
-                                }
-                            }
                         }, 
                         series: response.thisYear.profitChartData.reverse(),
                     });
@@ -92,7 +89,7 @@ var manager_screen_obj = {
     }, 
     loadPalletChartData: function( callback ){
         $.ajax({
-            url: app.SERVICE_URL + "pallet_chart_data",
+            url: config.SERVICE_URL + "pallet_chart_data",
             data: manager_screen_obj.ajaxData, 
             success: function ( response ){ 
                 // console.log( "pallet chart data 60 days " , response.sixtyDays.pallets );  
@@ -125,7 +122,7 @@ var manager_screen_obj = {
                 plotBorderWidth: null,
                 plotShadow: false,
                 type: 'pie',
-                height: 250, 
+                height: 200,  
             }, 
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
@@ -133,11 +130,12 @@ var manager_screen_obj = {
             plotOptions: {
                 pie: {
                     allowPointSelect: false, 
-                    innerSize: '20%', 
+                    innerSize: '5%', 
                     dataLabels: {
-                        enabled: true,
+                        enabled: false,
                         format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                    }
+                    },
+                    showInLegend: true,
                 },
                 series: {
                     animation: {
@@ -145,18 +143,24 @@ var manager_screen_obj = {
                     }
                 }
             },
+            legend: {  
+                align: 'left', 
+                itemStyle: { 
+                    fontSize: '7px', 
+                },   
+            },
             series: [ data ]
         }); 
     },
     fetchingVariationData: function(){
         $.ajax({
-            url: app.SERVICE_URL + "dashboardVariations",
+            url: config.SERVICE_URL + "dashboardVariations",
             data: manager_screen_obj.ajaxData,
             success: function( response ){
                 console.log( "Fetching variation" ,  response.topVariations );  
                 var variationData = [];
-                variationData.push( { label: 'CUSTOMERS' , data: response.topVariations.customers });
                 variationData.push( { label: 'SUPPLIERS' , data: response.topVariations.suppliers });
+                variationData.push( { label: 'CUSTOMERS' , data: response.topVariations.customers });
                 // variationData.push( { label: 'REPAIRS' , data: response.topVariations.repairs  }); 
                 $.observable( app.data.manager.variationSummary.rows ).refresh( variationData );   
             },
