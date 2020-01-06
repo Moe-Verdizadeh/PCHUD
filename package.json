@@ -14,7 +14,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cordova-android": "^8.1.0",
-    "cordova-plugin-geolocation": "^4.0.2",
     "highcharts": "^8.0.0"
   },
   "devDependencies": {
@@ -22,8 +21,7 @@
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {},
-      "cordova-plugin-geolocation": {}
+      "cordova-plugin-whitelist": {}
     },
     "platforms": [
       "android"
