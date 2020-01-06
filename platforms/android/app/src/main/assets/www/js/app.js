@@ -152,7 +152,7 @@ var app = {
                     console.log( "ERROR FETCHING DATA " + error );
                 },
             });
-            setInterval( app.set_current_weather , 600000 ); 
+            setTimeout( app.set_current_weather , 600000 ); 
         }
     }
 }; 
