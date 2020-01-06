@@ -24,10 +24,10 @@
 
 
 
-<div style="position: fixed; bottom: 10px; left:10px; width:100px;">
+<div style="position: fixed; bottom: 10px; left:10px; width:300px;">
     <button onclick="app.logout(); app.navigate( 'home' )" class="btn btn-lg btn-block btn-default"> <b><span class="fa fa-sign-out-alt"></span> Logout</b></button>
 </div> 
-<div style="position: fixed; bottom: 10px; right:10px; width:200px;">
+<div style="position: fixed; bottom: 10px; right:10px; width:400px;" data-link="visible{:!weather.loading}">
     {{include tmpl="template_weather"/}} 
     <div class="btn-group" style="width: 100%;" >
         <button style="width: 50%;" onclick="app.toggle_units()" class="btn" data-link="class{merge:is_metric toggle='btn-success'} class{merge:!is_metric toggle='btn-default'}">

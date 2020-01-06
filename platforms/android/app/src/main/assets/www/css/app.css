@@ -1,27 +1,27 @@
 html,body,table{
-    font-size: 8px;
+    font-size: 24px;
 }
 
 .padded-top-1x{
-    padding-top:5px;
-}
-
-.padded-top-2x{
-    padding-top:10px;
-}
-
-.padded-top-3x{
     padding-top:15px;
 }
 
+.padded-top-2x{
+    padding-top:25px;
+}
+
+.padded-top-3x{
+    padding-top:35px;
+}
+
 .padded-all-1x{
-    padding:5px;
+    padding:15px;
 }
 .padded-all-2x{
-    padding:10px;
+    padding:25px;
 }
 .padded-all-3x{
-    padding:15px;
+    padding:35px;
 }
 .bordered{
     border-style: solid;

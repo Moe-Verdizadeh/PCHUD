@@ -51,7 +51,7 @@ var manager_screen_obj = {
                         chart:{
                             renderTo: 'containerChart',
                             type: 'areaspline',
-                            height: 218,
+                            height: 350,
                         },
                         title: { 
                             text: '12 Months',
@@ -122,7 +122,7 @@ var manager_screen_obj = {
                 plotBorderWidth: null,
                 plotShadow: false,
                 type: 'pie',
-                height: 200,  
+                height: 300,  
             }, 
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
@@ -146,7 +146,7 @@ var manager_screen_obj = {
             legend: {  
                 align: 'left', 
                 itemStyle: { 
-                    fontSize: '7px', 
+                    fontSize: '1em', 
                 },   
             },
             series: [ data ]

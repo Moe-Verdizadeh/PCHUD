@@ -13,26 +13,26 @@
             <div class="col-xs-6">
                 <div class="row padded-all-1x bg-info" style="margin-left: 0; margin-right: 0;">
                     <div class="col-xs-4">
-                        <h4><i class="fas fa-arrow-alt-circle-down"></i> Suppliers</h4>
+                        <h5><i class="hidden fas fa-arrow-alt-circle-down"></i> Suppliers</h5>
                     </div>
                     <div class="col-xs-4 text-center">
-                        <h4>Requests: {^{:warehouse.supplier_pending_count}}</h4>
+                        <h5>Requests: {^{:warehouse.supplier_pending_count}}</h5>
                     </div>
                     <div class="col-xs-4 text-right">
-                        <h4>Pallets: {^{:warehouse.supplier_pending_qty}}</h4>
+                        <h5>Pallets: {^{:warehouse.supplier_pending_qty}}</h5>
                     </div>
                 </div>
             </div>  
             <div class="col-xs-6">
                 <div class="row padded-all-1x bg-info" style="margin-left: 0; margin-right: 0;">
                     <div class="col-xs-4">
-                        <h4><i class="fas fa-arrow-alt-circle-up"></i> Customers</h4>
+                        <h5><i class="hidden fas fa-arrow-alt-circle-up"></i> Customers</h5>
                     </div>
                     <div class="col-xs-4 text-center">
-                        <h4>Orders: {^{:warehouse.customer_pending_count}} </h4>
+                        <h5>Orders: {^{:warehouse.customer_pending_count}} </h5>
                     </div>
                     <div class="col-xs-4 text-right">
-                        <h4>Pallets: {^{:warehouse.customer_pending_qty}}</h4>
+                        <h5>Pallets: {^{:warehouse.customer_pending_qty}}</h5>
                     </div>
                 </div>
             </div> 
@@ -69,6 +69,6 @@
     </div>
 </div>
    
-<div style="position: fixed; bottom: 10px; left:10px; width:100px;">
+<div style="position: fixed; bottom: 10px; left:10px; width:300px;">
     <button onclick="localStorage.removeItem( 'pallet_connect_hud_lastScreen' ); app.navigate( 'screen_selection' )" class="btn btn-lg btn-block btn-default" autofocus> <b><span class="fa fa-arrow-left"></span> Back</b></button>
 </div>  
