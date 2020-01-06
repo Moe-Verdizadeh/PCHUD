@@ -42,6 +42,7 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
+        app.navigate( "" );
         socketHelper.connect( function(){
             console.log( "We are connected and ready to go." );
             var screensToLoad = config.PAGE_FILES.length + config.TEMPLATE_FILES.length;
