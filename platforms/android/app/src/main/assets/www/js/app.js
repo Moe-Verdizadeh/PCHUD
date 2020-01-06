@@ -1,19 +1,9 @@
  /* 
- *     Copyright (C) 2019 Mohammad Khanverdizadeh  < MoKode >
- *     < www.mokode.ca >  
+ *     Copyright (C) 2019 Mohammad Khanverdizadeh  < Pallet Connect >
+ *     < www.palletconnect.com >  
  *     Designed and developed for Pallet Pickup Canada (C)
- */
-$(window).on('hashchange', function() { 
-    var page = window.location.hash.substr(1)
-    $.templates[ page ].link( "#app", app.data );
-    if( typeof( window[ page ] ) === "function" ){
-        window[ page ]();
-    } 
-});
-var app = {
-    SERVICE_URL: "https://appapi.palletconnect.com/api/",
-    pages: [ 'home' , 'screen_selection' , 'warehouse_screen' , 'warehouse_selection' , "manager_screen"  ],
-    templates: [ 'warehouse_pending_card' , 'warehouse_summary_card' , 'manager_variations_card' , 'manager_piechart' , 'manager_summary_card' , 'weather' , 'warehouse_pending' ],
+ */ 
+var app = {  
     codeTimer: null,
     refreshTimer: null,
     transactionsChannel: null,
@@ -54,10 +44,10 @@ var app = {
     onDeviceReady: function() {
         socketHelper.connect( function(){
             console.log( "We are connected and ready to go." );
-            var screensToLoad = app.pages.length + app.templates.length;
+            var screensToLoad = config.PAGE_FILES.length + config.TEMPLATE_FILES.length;
             var loadedScreens = 0;
 
-            $.each( app.templates , function( ind , page ){
+            $.each( config.TEMPLATE_FILES , function( ind , page ){
                 $.ajax( {
                     url : "templates/" + page + ".html" , 
                     success: function( content ){
@@ -71,7 +61,7 @@ var app = {
                 });
             });
 
-            $.each( app.pages , function( ind , page ){
+            $.each( config.PAGE_FILES , function( ind , page ){
                 app.lazyGetTemplate( page ).then( function( pageLoaded ){
                     console.log( pageLoaded + " Was loaded into the $.templates" ); 
                     loadedScreens++; 
@@ -143,7 +133,7 @@ var app = {
                     lat: app.geoLocation.latitude,
                     lon: app.geoLocation.longitude,
                     units: app.data.is_metric ? "metric" : "imperial",
-                    APPID: 'a8c479f116d01420795531e3ffe354b6'
+                    APPID: config.WEATHER_APP_ID
                 },
                 success: function( response ){  
                     $.observable( app.data ).setProperty( "city_name" , response.name );  
@@ -168,6 +158,15 @@ var app = {
 }; 
 app.initialize();
 
+
+$(window).on('hashchange', function() { 
+    var page = window.location.hash.substr(1)
+    $.templates[ page ].link( "#app", app.data );
+    if( typeof( window[ page ] ) === "function" ){
+        window[ page ]();
+    } 
+});
+
 function isToday( dateToCheck){ 
     return new Date( dateToCheck ).getDate()  === new Date().getDate() ; 
 }
@@ -177,14 +176,13 @@ function isThisMonth( dateToCheck ){
 
 function fetchTransaction( id , callback ){
     $.ajax({
-        url: app.SERVICE_URL + "transactions/" + id, 
+        url: config.SERVICE_URL + "transactions/" + id, 
         success: function( response ){  
             callback( response );
         }
     });
 } 
  
-
 var currentMoment;
 function clock(){  
     if( typeof(m) === "undefined" ){
@@ -209,17 +207,9 @@ function setAjaxHeaders(){
 var socketHelper = {
     pusher: null,
     connect: function( callback ){ 
-        socketHelper.pusher = new Pusher( "d40605f5f27a0a317fc8" , {
-            cluster: "us2"
-            //2d5761b92c6087a05b95 // TEST
-            //927b44b96dbff529ff88 // DEV
-            //d40605f5f27a0a317fc8 // PRODUCTION
-        });   
-        socketHelper.pusher.connection.bind ( 'connecting'              ,  socketHelper.connecting );
-        socketHelper.pusher.connection.bind ( 'connected'               ,  callback );
-       
-        // socketHelper.data_channel = pusher.subscribe( 'hud_app_data.RAND' );
-        //when verified token and id 
+        socketHelper.pusher = new Pusher( config.PUSHER_KEY , { cluster: "us2" });   
+        socketHelper.pusher.connection.bind ( 'connecting' ,  socketHelper.connecting );
+        socketHelper.pusher.connection.bind ( 'connected'  ,  callback );
     },
     connecting: function(){
         console.log( "Waiting for connection..." );
@@ -232,16 +222,6 @@ var socketHelper = {
     },
 }
 
-
-
-// an extension to format numbers
-// call like this 
-/*
-    1234..format();           // "1,234"
-    12345..format(2);         // "12,345.00"
-    123456.7.format(3, 2);    // "12,34,56.700"
-    123456.789.format(2, 4);  // "12,3456.79"
-*/
 Number.prototype.format = function(n, x) {
     var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
     return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');

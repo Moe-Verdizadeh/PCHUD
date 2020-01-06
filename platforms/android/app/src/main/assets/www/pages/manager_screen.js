@@ -42,7 +42,7 @@ var manager_screen_obj = {
         return  new Promise(
             function (resolve, reject) {    
             $.ajax({
-                url: app.SERVICE_URL + "fetchChartData",
+                url: config.SERVICE_URL + "fetchChartData",
                 data: manager_screen_obj.ajaxData,
                 success: function ( response ){ 
                     console.log( "Response" , response );     
@@ -75,17 +75,7 @@ var manager_screen_obj = {
                         },
                         yAxis: {
                             visible: false,
-                            // title: {
-                            //     text: 'Dollars'
-                            // }, 
                         }, 
-                        // plotOptions: {
-                        //     series: {
-                        //         marker: {
-                        //             enabled: true
-                        //         }
-                        //     }
-                        // }, 
                         series: response.thisYear.profitChartData.reverse(),
                     });
                     resolve();
@@ -99,7 +89,7 @@ var manager_screen_obj = {
     }, 
     loadPalletChartData: function( callback ){
         $.ajax({
-            url: app.SERVICE_URL + "pallet_chart_data",
+            url: config.SERVICE_URL + "pallet_chart_data",
             data: manager_screen_obj.ajaxData, 
             success: function ( response ){ 
                 // console.log( "pallet chart data 60 days " , response.sixtyDays.pallets );  
@@ -164,7 +154,7 @@ var manager_screen_obj = {
     },
     fetchingVariationData: function(){
         $.ajax({
-            url: app.SERVICE_URL + "dashboardVariations",
+            url: config.SERVICE_URL + "dashboardVariations",
             data: manager_screen_obj.ajaxData,
             success: function( response ){
                 console.log( "Fetching variation" ,  response.topVariations );  

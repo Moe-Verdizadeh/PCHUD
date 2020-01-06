@@ -13,14 +13,14 @@
             </thead>
             <tbody>
                 {^{for data.bad}}
-                    <tr>
+                    <tr class="bg-danger">
                         <td> {^{:name}}</td>
                         <!-- <td class="text-right">{^{:qtyChange}}</td> -->
                         <td class="text-right">{^{:qtyPercentChange}} % <span class="fa fa-caret-down text-danger"></span></td>
                     </tr> 
                 {{/for}}
                 {^{for data.good}}
-                    <tr>
+                    <tr class="bg-success">
                         <td> {^{:name}}</td>
                         <!-- <td class="text-right">{^{:qtyChange}}</td> -->
                         <td class="text-right">{^{:qtyPercentChange}} % <span class="fa fa-caret-up text-success"></span></td>
