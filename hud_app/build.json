@@ -1,0 +1,32 @@
+{ 
+    "android": {
+        "debug": {
+            "keystore": "pallet.connect.android.keystore",
+            "storePassword": "UHX=2L&*HB`s(@h5",
+            "alias": "PalletConnect",
+            "password" : "Pc@bbcb12Oi8",
+            "keystoreType": ""
+        },
+        "release": {
+            "keystore": "pallet.connect.android.keystore",
+            "storePassword": "UHX=2L&*HB`s(@h5",
+            "alias": "PalletConnect",
+            "password" : "Pc@bbcb12Oi8",
+            "keystoreType": ""
+        },
+        "device": {
+            "keystore": "pallet.connect.android.keystore",
+            "storePassword": "UHX=2L&*HB`s(@h5",
+            "alias": "PalletConnect",
+            "password" : "Pc@bbcb12Oi8",
+            "keystoreType": ""
+        },
+        "emulator": {
+            "keystore": "pallet.connect.android.keystore",
+            "storePassword": "UHX=2L&*HB`s(@h5",
+            "alias": "PalletConnect",
+            "password" : "Pc@bbcb12Oi8",
+            "keystoreType": ""
+        }
+    }
+}
