@@ -28,19 +28,9 @@
     <button onclick="app.logout(); app.navigate( 'home' )" class="btn btn-lg btn-block btn-default"> <b><span class="fa fa-sign-out-alt"></span> Logout</b></button>
 </div> 
 
-<!-- <div style="position: fixed; bottom: 10px; right:10px; width:400px;" data-link="visible{:!weather.loading}">
+<div style="position: fixed; bottom: 10px; right:10px; width:400px;">
     {{include tmpl="template_weather"/}} 
-    <div class="btn-group" style="width: 100%;" >
-        <button style="width: 50%;" onclick="app.toggle_units()" class="btn" data-link="class{merge:is_metric toggle='btn-success'} class{merge:!is_metric toggle='btn-default'}">
-            {^{if is_metric}}<span class="fa fa-check"></span> {{/if}}Metric
-        </button>
-        <button style="width: 50%;" onclick="app.toggle_units()" class="btn" data-link="class{merge:is_metric toggle='btn-default'} class{merge:!is_metric toggle='btn-success'}">
-            {^{if !is_metric}}<span class="fa fa-check"></span> {{/if}}Imperial
-        </button> 
-    </div>
-   
-</div>  -->
-
-<div style="position: fixed; bottom: 10px; right:10px; width:300px;">
-    <button onclick="app.logout(); app.navigate( 'setting' )" class="btn btn-lg btn-block btn-default"> <b><span class="fas fa-cogs"></span> Setting</b></button>
+    <div style="width: 100%;" >
+        <button onclick="app.navigate( 'settings' )" class="btn btn-lg btn-block btn-default"> <b><span class="fas fa-cogs"></span> Settings</b></button>
+    </div>  
 </div> 

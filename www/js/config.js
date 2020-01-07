@@ -17,7 +17,7 @@ var config = {
         'warehouse_selection',
         'manager_screen',
         'manager_selection',
-        'setting' 
+        'settings' 
     ],
 
     TEMPLATE_FILES: [ 

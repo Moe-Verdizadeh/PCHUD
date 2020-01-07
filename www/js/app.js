@@ -19,16 +19,19 @@ var app = {
         code: null,
         warehouse:  { pending_transactions : { rows: [] } }, 
         manager: { piecharts: [], variationSummary: { rows: [] } },
+        settings: { city_list: [] },
         summary: [] ,
     },
-    pageRefresh: function( timeInMinutes , callback ){
+    pageRefresh: function( timeInMinutes , callback ){ 
         if( app.refreshTimer !== null ){
             clearTimeout( app.refreshTimer );
         }
-        app.nextRefresh = new Date().getTime() + timeInMinutes * 60000;
-        app.refreshTimer = setTimeout( callback , timeInMinutes * 60000 );
+        var timeInMilliseconds = timeInMinutes * 60000;
+        app.nextRefresh = new Date().getTime() + timeInMilliseconds;
+        app.refreshTimer = setTimeout( callback , timeInMilliseconds );
     },
     navigate: function( page ){
+        console.log( "navigate to : " , page );
         window.location = "#" + page;
         return false;  
     },
@@ -44,9 +47,9 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
-        // app.navigate( "" );
         socketHelper.connect( function(){
-            console.log( "We are connected and ready to go." );
+            console.log( "App Loaded" );
+            app.navigate( "" );
             var screensToLoad = config.PAGE_FILES.length + config.TEMPLATE_FILES.length;
             var loadedScreens = 0;
 
@@ -57,7 +60,7 @@ var app = {
                         $.templates( "template_" + page , content ); 
                         loadedScreens++; 
                         if( loadedScreens == screensToLoad ){
-                            console.log( "There's No Place Like Home" );
+                            console.log( "Nav Home (1)" );
                             app.navigate( "home" );
                         }
                     }
@@ -66,11 +69,11 @@ var app = {
 
             $.each( config.PAGE_FILES , function( ind , page ){
                 app.lazyGetTemplate( page ).then( function( pageLoaded ){
-                    console.log( pageLoaded + " Was loaded into the $.templates" ); 
+                    // console.log( pageLoaded + " Was loaded into the $.templates" ); 
                     loadedScreens++; 
                     // console.log( loadedScreens , screensToLoad);
                     if( loadedScreens == screensToLoad ){
-                        console.log( "There's No Place Like Home" );
+                        console.log( "Nav Home (2)" );
                         app.navigate( "home" );
                     }
                 });
@@ -80,17 +83,18 @@ var app = {
                 localStorage.setItem( "is_metric" , app.data.is_metric );
                 app.set_current_weather();
             });
-            app.set_location().then( app.set_current_weather );
+            app.set_current_weather();
+            // app.set_location().then( app.set_current_weather );
         });
     },
     lazyGetTemplate: function(name) {
-        console.log( "WE ARE FETCHING A TEMPLATE ( " + name + ")" );
+        // console.log( "WE ARE FETCHING A TEMPLATE ( " + name + ")" );
         var deferred = $.Deferred();
         if ( $.templates[ name ] ) { 
-            console.log( "IT WAS ALREADY LOADED, JUST RESOLVE THE PROMISE" );
+            // console.log( "IT WAS ALREADY LOADED, JUST RESOLVE THE PROMISE" );
             deferred.resolve( name );
         } else { 
-            console.log( "LOAD " + name + " into $.templates" );
+            // console.log( "LOAD " + name + " into $.templates" );
             $.getScript( "pages/" + name + ".js" ).then(function() { 
                 $.ajax( {
                     url : "pages/" + name + ".html" , 
@@ -110,22 +114,22 @@ var app = {
         app.navigate( "home" );  
    },
    set_location: function(){    
-       console.log( "SET THE LOCATION..." );
-        return  new Promise(
-        function( resolve, reject ){ 
-                    navigator.geolocation.getCurrentPosition( function( response ){
-                        app.geoLocation = response.coords;
-                        console.log( "geolocation" , response.coords );
-                        resolve();
-                    })
-                }); 
+    //    console.log( "SET THE LOCATION..." );
+    //     return  new Promise(
+    //     function( resolve, reject ){ 
+    //                 navigator.geolocation.getCurrentPosition( function( response ){
+    //                     app.geoLocation = response.coords;
+    //                     console.log( "geolocation" , response.coords );
+    //                     resolve();
+    //                 })
+    //             }); 
     },
     toggle_units: function(){  
         $.observable( app.data ).setProperty( "is_metric" , app.data.is_metric == 1 ? 0 : 1  );
     },
     set_current_weather: function(){ 
         console.log( "setting weather..." );
-        if( typeof( app.geoLocation ) !== "undefined" ){
+        if( localStorage.getItem( "city_id" ) !== null ){
             console.log( "geolocation is set." );
             console.log( "is_metric: " , app.data.is_metric );
             $.observable( app.data ).setProperty( "units_icon" , app.data.is_metric ? "&#8451;" : '&#8457;' );
@@ -133,9 +137,7 @@ var app = {
                 dataType: "jsonp",
                 url:  'https://api.openweathermap.org/data/2.5/weather',
                 data: {
-                    lat: app.geoLocation.latitude,
-                    lon: app.geoLocation.longitude,
-                    q: app.data.city + ',' + app.data.countryCode,
+                    id: localStorage.getItem( "city_id" ),
                     units: app.data.is_metric ? "metric" : "imperial",
                     APPID: config.WEATHER_APP_ID
                 },
@@ -164,11 +166,15 @@ app.initialize();
 
 
 $(window).on('hashchange', function() { 
-    var page = window.location.hash.substr(1)
-    $.templates[ page ].link( "#app", app.data );
-    if( typeof( window[ page ] ) === "function" ){
-        window[ page ]();
-    } 
+    var page = window.location.hash.substr(1);
+    if( page != "" ){
+        $.templates[ page ].link( "#app", app.data );
+        if( typeof( window[ page ] ) === "function" ){
+            window[ page ]();
+        } 
+    }else{
+        $("#app").html('<div class="text-center padded-all-3x"><span class="fa fa-spin fa-circle-notch fa-4x"></span></div>');
+    }
 });
 
 function isToday( dateToCheck){ 

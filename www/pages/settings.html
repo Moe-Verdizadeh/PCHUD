@@ -1,0 +1,57 @@
+<div class="row padded-top-2x">
+    <div class="col-xs-12 text-center padded-all-3x"><h1>SETTINGS</h1></div>
+</div>
+
+<div class="row">
+    <div class="col-xs-offset-3 col-xs-6"> 
+        <div class="text-left"><h4>Weather</h4></div>
+
+        <div class="row padded-top-1x">
+            <div class="col-xs-4">
+                <h6>City</h6>
+            </div>
+            <div class="col-xs-8"> 
+                {^{if settings.has_city_id}} 
+                    {^{:settings.city_name}} <a class="pull-right btn btn-primary" data-link="{on ~toggle_has_weather}"><span class="fa fa-edit"></span></a>
+                {{else}}
+                    <input id="settings_city_name" onkeyup="typeAheadCity()" class="form-control" type="text" placeholder="Start typing to search"/>
+                {{/if}}
+            </div> 
+            <div class="col-xs-12" id="settings_city_list">
+                {^{for settings.city_list}}
+                    <a class="btn btn-block btn-default" data-link="{on ~set_city_id id name}">{{:name}}, {{:country}} </a>
+                {{/for}}
+            </div> 
+        </div>
+
+        <div class="row padded-top-1x">
+            <div class="col-xs-4">
+                <h6>Units</h6>
+            </div>
+            <div class="col-xs-8">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button onclick="app.toggle_units()" class="btn btn-block" data-link="class{merge:is_metric toggle='btn-success'} class{merge:!is_metric toggle='btn-default'}">
+                            {^{if is_metric}}<span class="fa fa-check"></span> {{/if}}&#8451;
+                        </button> 
+                    </div>
+                    <div class="col-xs-6">
+                        <button onclick="app.toggle_units()" class="btn btn-block" data-link="class{merge:is_metric toggle='btn-default'} class{merge:!is_metric toggle='btn-success'}">
+                            {^{if !is_metric}}<span class="fa fa-check"></span> {{/if}}&#8457;
+                        </button>  
+                    </div>
+                </div>
+            </div> 
+        </div>
+
+    </div>
+</div>
+        
+        
+        
+        
+
+
+<div style="position: fixed; bottom: 10px; left:10px; width:300px;">
+    <button onclick="app.navigate( 'screen_selection' )" class="btn btn-lg btn-block btn-default" autofocus> <b><span class="fa fa-arrow-left"></span> Back</b></button>
+</div>  
