@@ -1,17 +1,8 @@
-var full_city_list = [];
-
 function settings(){
     $.observable( app.data.settings ).setProperty( "has_city_id" , localStorage.getItem( "city_id" ) !== null );
     $.observable( app.data.settings ).setProperty( "city_name" , localStorage.getItem( "city_name" ) );
     localStorage.pallet_connect_hud_lastScreen = 'settings';  
-    setting_search_typing_timer = null;
-    $.ajax({
-        dataType: "json",
-        url: "res/city_list.json",
-        success: function( response ){
-            full_city_list = response;
-        }
-    });
+    setting_search_typing_timer = null; 
 }
 
 $.views.helpers ("set_city_id", setWeatherCityId );
@@ -39,7 +30,7 @@ function typeAheadCity(){
         if( setting_search_typing_timer !== null ){
             clearTimeout( setting_search_typing_timer );
         }
-        setting_search_typing_timer = setTimeout( settings_city_search_run , 1500 );
+        setting_search_typing_timer = setTimeout( settings_city_search_run , 500 );
     }else{
         $.observable( app.data.settings.city_list ).refresh( [] );
     } 
@@ -47,15 +38,13 @@ function typeAheadCity(){
 
 
 function settings_city_search_run(){
-    var searchTxt = $( "#settings_city_name" ).val().trim().toLowerCase();
-    var addedCities = []; 
+    var searchTxt = $( "#settings_city_name" ).val().trim().toLowerCase(); 
     $.observable( app.data.settings.city_list ).refresh( [] );
-    $.each( full_city_list , function( index , cityData ){
-        var cityName = cityData.name.toLowerCase();
-        var uniqueName = cityData.name.toLowerCase()+cityData.country.toLowerCase();
-        if( addedCities.length < 11 && $.inArray( uniqueName , addedCities ) === -1 && cityName.includes( searchTxt ) ){
-            addedCities.push( uniqueName );
-            $.observable( app.data.settings.city_list ).insert( cityData );
+    $.ajax( {
+        url: config.SERVICE_URL + "hud_cities/" + searchTxt,
+        success: function( response){
+            $.observable( app.data.settings.city_list ).refresh( response );
         }
-    }); 
+    })
+    
 }
