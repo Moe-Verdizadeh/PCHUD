@@ -10,6 +10,8 @@ var app = {
     nextRefresh: 0, 
     data: {
         is_metric: typeof( localStorage.is_metric ) !== "undefined" ?  parseInt( localStorage.is_metric ) : 1,
+        city: '',
+        countryCode: '',
         weather: { loading: true },
         current_time: 0,
         current_date: 0,
@@ -133,6 +135,7 @@ var app = {
                 data: {
                     lat: app.geoLocation.latitude,
                     lon: app.geoLocation.longitude,
+                    q: app.data.city + ',' + app.data.countryCode,
                     units: app.data.is_metric ? "metric" : "imperial",
                     APPID: config.WEATHER_APP_ID
                 },
