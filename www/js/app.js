@@ -74,8 +74,8 @@ var app = {
                         loadedScreens++; 
                         if( loadedScreens == screensToLoad ){
                             console.log( "Nav Home (1)" );
-                            // app.navigate( "home" );
-                            home();
+                            app.navigate( "home" );
+                            // home();
                         }
                     }
                 });
@@ -88,7 +88,7 @@ var app = {
                     // console.log( loadedScreens , screensToLoad);
                     if( loadedScreens == screensToLoad ){
                         console.log( "Nav Home (2)" );
-                        home();
+                        app.navigate( "home" );
                     }
                 });
             });
@@ -119,6 +119,7 @@ var app = {
         window.history.pushState("backhandler", null, null); 
         
         $(window).on('hashchange', function() {
+            // console.log( "hash" , window.location.hash.substr(1));
             app.currentPage = window.location.hash.substr(1);
             if( app.currentPage != "" ){
                 $.templates[ app.currentPage ].link( "#app", app.data );
