@@ -46,38 +46,38 @@ var manager_screen_obj = {
                 data: manager_screen_obj.ajaxData,
                 success: function ( response ){ 
                     console.log( "Response" , response );     
-                    var chart = Highcharts.chart( {
-                        credits: 'disabled',
-                        chart:{
-                            renderTo: 'containerChart',
-                            type: 'areaspline',
-                            height: 350,
-                        },
-                        title: { 
-                            text: '12 Months',
+                    // var chart = Highcharts.chart( {
+                    //     credits: 'disabled',
+                    //     chart:{
+                    //         renderTo: 'containerChart',
+                    //         type: 'areaspline',
+                    //         height: 350,
+                    //     },
+                    //     title: { 
+                    //         text: '12 Months',
 
-                        },  
-                        legend: {
-                            layout: 'vertical',
-                            align: 'left',
-                            verticalAlign: 'top',
-                            x: 0,
-                            y: 0,
-                            floating: true,
-                            borderWidth: 1, 
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            dateTimeLabelFormats: { 
-                                month: '%e. %b',
-                                year: '%b'
-                            }, 
-                        },
-                        yAxis: {
-                            visible: false,
-                        }, 
-                        series: response.thisYear.profitChartData.reverse(),
-                    });
+                    //     },  
+                    //     legend: {
+                    //         layout: 'vertical',
+                    //         align: 'left',
+                    //         verticalAlign: 'top',
+                    //         x: 0,
+                    //         y: 0,
+                    //         floating: true,
+                    //         borderWidth: 1, 
+                    //     },
+                    //     xAxis: {
+                    //         type: 'datetime',
+                    //         dateTimeLabelFormats: { 
+                    //             month: '%e. %b',
+                    //             year: '%b'
+                    //         }, 
+                    //     },
+                    //     yAxis: {
+                    //         visible: false,
+                    //     }, 
+                    //     series: response.thisYear.profitChartData.reverse(),
+                    // });
                     resolve();
                 },
                 error: function( error ){
@@ -113,44 +113,44 @@ var manager_screen_obj = {
     },
     renderPalletChart: function ( container , data ){ 
         // console.log( "Render Chart " , container , " Data " , data );
-        Highcharts.chart(  {
-            credits: 'disabled',
-            title: false,
-            chart: {
-                renderTo: container,
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie',
-                height: 300,  
-            }, 
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: false, 
-                    innerSize: '5%', 
-                    dataLabels: {
-                        enabled: false,
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                    },
-                    showInLegend: true,
-                },
-                series: {
-                    animation: {
-                        duration: 1000
-                    }
-                }
-            },
-            legend: {  
-                align: 'left', 
-                itemStyle: { 
-                    fontSize: '1em', 
-                },   
-            },
-            series: [ data ]
-        }); 
+        // Highcharts.chart(  {
+        //     credits: 'disabled',
+        //     title: false,
+        //     chart: {
+        //         renderTo: container,
+        //         plotBackgroundColor: null,
+        //         plotBorderWidth: null,
+        //         plotShadow: false,
+        //         type: 'pie',
+        //         height: 300,  
+        //     }, 
+        //     tooltip: {
+        //         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
+        //     },
+        //     plotOptions: {
+        //         pie: {
+        //             allowPointSelect: false, 
+        //             innerSize: '5%', 
+        //             dataLabels: {
+        //                 enabled: false,
+        //                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+        //             },
+        //             showInLegend: true,
+        //         },
+        //         series: {
+        //             animation: {
+        //                 duration: 1000
+        //             }
+        //         }
+        //     },
+        //     legend: {  
+        //         align: 'left', 
+        //         itemStyle: { 
+        //             fontSize: '1em', 
+        //         },   
+        //     },
+        //     series: [ data ]
+        // }); 
     },
     fetchingVariationData: function(){
         $.ajax({
