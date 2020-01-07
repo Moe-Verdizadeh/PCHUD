@@ -12,7 +12,7 @@
             </div>
             <div class="col-xs-8"> 
                 {^{if settings.has_city_id}} 
-                    {^{:settings.city_name}} <a class="pull-right btn btn-primary" data-link="{on ~toggle_has_weather}"><span class="fa fa-edit"></span></a>
+                    {^{:settings.city_name}} <a class="pull-right btn btn-default" data-link="{on ~toggle_has_weather}"><span class="fa fa-edit"></span></a>
                 {{else}}
                     <input id="settings_city_name" onkeyup="typeAheadCity()" class="form-control" type="text" placeholder="Start typing to search"/>
                 {{/if}}
