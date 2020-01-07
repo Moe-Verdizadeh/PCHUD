@@ -4,6 +4,7 @@
  *     Designed and developed for Pallet Pickup Canada (C)
  */ 
 var app = {  
+    currentPage: '',
     codeTimer: null,
     refreshTimer: null,
     transactionsChannel: null,
@@ -31,9 +32,21 @@ var app = {
         app.refreshTimer = setTimeout( callback , timeInMilliseconds );
     },
     navigate: function( page ){
-        console.log( "navigate to : " , page );
+        if( window.location.hash.substr(1) == page ){
+            window.location = "";
+        }
         window.location = "#" + page;
-        return false;  
+        // console.log( "navigate to : " , page );
+        // app.currentPage = page;
+        // if( window.location.hash.substr(1) == page ){
+        //     $.templates[ page ].link( "#app", app.data );
+        //     if( typeof( window[ page ] ) === "function" ){
+        //         window[ page ]();
+        //     } 
+        // }else{
+        //     window.location = "#" + page;
+        // }
+        // return false;  
     },
     // Application Constructor
     initialize: function() {
@@ -49,7 +62,7 @@ var app = {
     onDeviceReady: function() {
         socketHelper.connect( function(){
             console.log( "App Loaded" );
-            app.navigate( "" );
+            // app.navigate( "" );
             var screensToLoad = config.PAGE_FILES.length + config.TEMPLATE_FILES.length;
             var loadedScreens = 0;
 
@@ -61,7 +74,8 @@ var app = {
                         loadedScreens++; 
                         if( loadedScreens == screensToLoad ){
                             console.log( "Nav Home (1)" );
-                            app.navigate( "home" );
+                            // app.navigate( "home" );
+                            home();
                         }
                     }
                 });
@@ -74,7 +88,7 @@ var app = {
                     // console.log( loadedScreens , screensToLoad);
                     if( loadedScreens == screensToLoad ){
                         console.log( "Nav Home (2)" );
-                        app.navigate( "home" );
+                        home();
                     }
                 });
             });
@@ -85,6 +99,35 @@ var app = {
             });
             app.set_current_weather();
             // app.set_location().then( app.set_current_weather );
+        });
+ 
+        window.addEventListener("popstate", function () { 
+            if (window.history.state !== "backhandler") {
+                // put your back handler code here
+                if( window.location.hash.substr(1) == app.currentPage ){ 
+                    if( app.currentPage == "screen_selection" ){
+                        if( confirm( "Are you sure you want to exit" ) ){
+                            window.close();
+                        }
+                    }else{
+                        app.navigate( "screen_selection" );
+                    }
+                }
+                window.history.pushState("backhandler", null, null);
+            }
+        });
+        window.history.pushState("backhandler", null, null); 
+        
+        $(window).on('hashchange', function() {
+            app.currentPage = window.location.hash.substr(1);
+            if( app.currentPage != "" ){
+                $.templates[ app.currentPage ].link( "#app", app.data );
+                if( typeof( window[ app.currentPage ] ) === "function" ){
+                    window[ app.currentPage ]();
+                } 
+            }else{
+                $("#app").html('<div class="text-center padded-all-3x"><span class="fa fa-spin fa-circle-notch fa-4x"></span></div>');
+            }
         });
     },
     lazyGetTemplate: function(name) {
@@ -165,18 +208,6 @@ var app = {
 app.initialize();
 
 
-$(window).on('hashchange', function() { 
-    var page = window.location.hash.substr(1);
-    if( page != "" ){
-        $.templates[ page ].link( "#app", app.data );
-        if( typeof( window[ page ] ) === "function" ){
-            window[ page ]();
-        } 
-    }else{
-        $("#app").html('<div class="text-center padded-all-3x"><span class="fa fa-spin fa-circle-notch fa-4x"></span></div>');
-    }
-});
-
 function isToday( dateToCheck){ 
     return new Date( dateToCheck ).getDate()  === new Date().getDate() ; 
 }
@@ -236,3 +267,5 @@ Number.prototype.format = function(n, x) {
     var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
     return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
 };
+
+ 
