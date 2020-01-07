@@ -14,5 +14,4 @@
     // $sqlFile = fopen("res/cities.sql", "w") or die("Unable to open file!"); 
     // fwrite( $sqlFile , $sql );
     // fclose( $sqlFile ); 
-    // die;
-     
+    // die; 
