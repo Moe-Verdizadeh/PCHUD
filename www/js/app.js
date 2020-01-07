@@ -26,7 +26,7 @@ var app = {
             clearTimeout( app.refreshTimer );
         }
         app.nextRefresh = new Date().getTime() + timeInMinutes * 60000;
-        app.refreshTimer = setTimeout( callback , app.nextRefresh );
+        app.refreshTimer = setTimeout( callback , timeInMinutes * 60000 );
     },
     navigate: function( page ){
         window.location = "#" + page;
@@ -44,7 +44,7 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
-        app.navigate( "" );
+        // app.navigate( "" );
         socketHelper.connect( function(){
             console.log( "We are connected and ready to go." );
             var screensToLoad = config.PAGE_FILES.length + config.TEMPLATE_FILES.length;
