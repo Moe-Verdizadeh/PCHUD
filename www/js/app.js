@@ -149,7 +149,7 @@ var app = {
     },
     logout: function(){
         localStorage.clear();
-        app.lastPage( "" );
+        app.lastPage = "";
         app.navigate( "home" );  
    },
    set_location: function(){    
