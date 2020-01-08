@@ -1,0 +1,30 @@
+<div class="row">
+    <br /> 
+    <div class="col-xs-12 text-center"><img src="img/logo.png" style="width:75%;" /></div>
+</div>
+<div class="row padded-top-3x"> 
+    <div class="col-xs-12 text-center padded-all-3x"><h1>SELECT PALLET TYPES</h1></div>
+</div> 
+ 
+<div class="row padded-top-3x">
+    <div class="col-xs-offset-3 col-xs-3">
+        <button onclick="localStorage.warehouse_screen_type = 'recycled'; app.navigate( 'manager_screen' )" class="btn btn-lg btn-block btn-default" style="padding-top:50px; padding-bottom:50px;">
+            <i class="fas fa-2x fa-recycle"></i><br /><br />
+            <b>RECYCLED PALLETS</b>
+        </button>
+    </div>
+    <div class="col-xs-3">
+        <button onclick="localStorage.warehouse_screen_type = 'new'; app.navigate( 'manager_screen' )" class="btn btn-lg btn-block btn-default" style="padding-top:50px; padding-bottom:50px;">
+            <i class="far fa-2x fa-pallet"></i><br /><br />
+            <b>NEW PALLETS</b>
+        </button>
+    </div>
+</div>  
+
+<div style="position: fixed; bottom: 10px; left:10px; width:100px;">
+    <button onclick="app.navigate( 'screen_selection' )" class="btn btn-lg btn-block btn-default" autofocus> <b><span class="fa fa-arrow-left"></span> Back</b></button>
+</div>  
+
+<div style="position: fixed; bottom: 10px; right:10px; width:200px;">
+    {{include tmpl="template_weather"/}} 
+</div>

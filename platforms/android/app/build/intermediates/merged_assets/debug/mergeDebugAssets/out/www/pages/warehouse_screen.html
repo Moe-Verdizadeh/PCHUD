@@ -1,0 +1,41 @@
+ 
+    <div class="row bg-info" style="margin-bottom: 5px; ">  
+            
+        <div class="col-xs-2"> 
+            <h2 class="text-center padded-all-1x"> 
+                Summary
+            </h2> 
+        </div>
+        <div class="col-xs-10 padded-all-1x">
+            <div class="col-xs-6">
+                <h2>
+                {^{if localStorage.warehouse_screen_type = 'recycled' }}
+                <i class="fas fa-arrow-alt-circle-down"></i> Supplier Requests:
+                {^{else }}
+                    Purchase Orders: 
+                {{/if}}
+                {^{:warehouse.supplier_pending_count}}
+                <span class="pull-right">{^{:warehouse.supplier_pending_qty}}</span></h2> 
+            </div>
+            <div class="col-xs-6">
+                <h2><i class="fas fa-arrow-alt-circle-up"></i> Customer Orders: {^{:warehouse.customer_pending_count}} 
+                <span class="pull-right" >{^{:warehouse.customer_pending_qty}}</span></h2>
+            </div> 
+        </div> 
+    </div>   
+    <div class="row">
+        <div class="col-xs-2">   
+            {^{for summary ~current_month=current_month}}
+                {{include tmpl="template_warehouse_summary_card"/}}
+            {{/for}}
+            {{include tmpl="template_weather"/}} 
+        </div>  
+
+        <div class="col-xs-10">
+            {{include tmpl="template_warehouse_pending"/}} 
+        </div>
+    </div>  
+
+    <div style="position: fixed; bottom: 10px; left:10px; width:100px;">
+        <button onclick="localStorage.removeItem( 'pallet_connect_hud_lastScreen' ); app.navigate( 'warehouse_selection' )" class="btn btn-lg btn-block btn-default" autofocus> <b><span class="fa fa-arrow-left"></span> Back</b></button>
+    </div>  
