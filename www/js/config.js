@@ -27,6 +27,7 @@ var config = {
         'manager_piechart', 
         'manager_summary_card', 
         'weather', 
-        'warehouse_pending' 
+        'warehouse_pending',
+        'back_button'
     ]
 };

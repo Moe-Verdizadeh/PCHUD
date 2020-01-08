@@ -9,6 +9,8 @@
     </div> 
     <div class="col-xs-10"> 
 
+        <canvas id="myChart" width="400" height="100"></canvas>
+
         <div class="row" style="margin-bottom: 10px;">
             <div class="col-xs-6">
                 <div class="row padded-all-1x bg-info" style="margin-left: 0; margin-right: 0;">
@@ -68,7 +70,4 @@
         
     </div>
 </div>
-   
-<div style="position: fixed; bottom: 10px; left:10px; width:300px;">
-    <button onclick="localStorage.removeItem( 'pallet_connect_hud_lastScreen' ); app.navigate( 'screen_selection' )" class="btn btn-lg btn-block btn-default" autofocus> <b><span class="fa fa-arrow-left"></span> Back</b></button>
-</div>  
+{{include tmpl="template_back_button"/}}  

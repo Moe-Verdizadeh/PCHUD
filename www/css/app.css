@@ -1,7 +1,9 @@
 html,body,table{
     font-size: 24px;
 }
-
+#app{
+    padding:20px 30!important;
+}
 .padded-top-1x{
     padding-top:15px;
 }

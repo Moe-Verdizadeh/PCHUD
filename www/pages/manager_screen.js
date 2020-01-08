@@ -29,7 +29,7 @@ var manager_screen_obj = {
                     $.observable( app.data.warehouse.pending_transactions.rows ).observeAll(  warehouse_screen_obj.updateTotals );
                 });
             })
-        });
+        }); 
     },  
     monthlyValues: function(){  
         return  new Promise(
@@ -95,14 +95,14 @@ var manager_screen_obj = {
                 // console.log( "pallet chart data 60 days sales " , response.sixtyDays.pallets.sales );  
                 // console.log( "pallet chart data 60 days purchases " , response.sixtyDays.pallets.purchases ); 
                 $.each( response.sixtyDays.pallets.sales , function( index , row ){ 	
-                    manager_screen_obj.palletData.sales.data.push( { name: row.name, y: parseInt( row.percent ) } );
+                    manager_screen_obj.palletData.sales.data.push( { name: row.name, y: parseInt( row.percent ) } ); 
                 });  
                 $.each( response.sixtyDays.pallets.purchases , function( index , row){
                     manager_screen_obj.palletData.purchases.data.push( {name: row.name, y: parseInt( row.percent ) } );
                 }); 
                 $.each( response.sixtyDays.pallets.repairs , function( index , row){
                     manager_screen_obj.palletData.repairs.data.push( {name: row.name, y: row.percent } );
-                });
+                });   
                 callback();
             },
             error: function( error ){
@@ -111,46 +111,76 @@ var manager_screen_obj = {
         });    
     },
     renderPalletChart: function ( container , data ){ 
-        // console.log( "Render Chart " , container , " Data " , data );
-        Highcharts.chart(  {
-            credits: 'disabled',
-            title: false,
-            chart: {
-                renderTo: container,
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie',
-                height: 300,  
+        console.log( "Render Chart " , container , " Data " , data );  
+   
+        var pallets="";
+        $.each( data.data , function(ind , row){
+            pallets = data.data[ind];  
+        });  
+        var ctx = document.getElementById( container );
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data : {
+                datasets: [{
+                    data: [pallets.y]
+                }], 
+                labels: [
+                    pallets.name
+                ]
             }, 
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: false, 
-                    innerSize: '5%', 
-                    dataLabels: {
-                        enabled: false,
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                    },
-                    showInLegend: true,
-                },
-                series: {
-                    animation: {
-                        duration: 300
-                    }
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
                 }
-            },
-            legend: {  
-                align: 'left', 
-                itemStyle: { 
-                    fontSize: '1em', 
-                },   
-            },
-            series: [ data ]
-        }); 
+            }
+        });
     },
+
+
+        // console.log( "Render Chart " , container , " Data " , data );
+        // Highcharts.chart(  {
+        //     credits: 'disabled',
+        //     title: false,
+        //     chart: {
+        //         renderTo: container,
+        //         plotBackgroundColor: null,
+        //         plotBorderWidth: null,
+        //         plotShadow: false,
+        //         type: 'pie',
+        //         height: 300,  
+        //     }, 
+        //     tooltip: {
+        //         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
+        //     },
+        //     plotOptions: {
+        //         pie: {
+        //             allowPointSelect: false, 
+        //             innerSize: '5%', 
+        //             dataLabels: {
+        //                 enabled: false,
+        //                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+        //             },
+        //             showInLegend: true,
+        //         },
+        //         series: {
+        //             animation: {
+        //                 duration: 300
+        //             }
+        //         }
+        //     },
+        //     legend: {  
+        //         align: 'left', 
+        //         itemStyle: { 
+        //             fontSize: '1em', 
+        //         },   
+        //     },
+        //     series: [ data ]
+        // }); 
+    
     fetchingVariationData: function(){
         $.ajax({
             url: config.SERVICE_URL + "dashboardVariations",
