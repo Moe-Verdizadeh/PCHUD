@@ -4,6 +4,7 @@
  *     Designed and developed for Pallet Pickup Canada (C)
  */ 
 var app = {  
+    lastPage: '',
     currentPage: '',
     codeTimer: null,
     refreshTimer: null,
@@ -32,21 +33,11 @@ var app = {
         app.refreshTimer = setTimeout( callback , timeInMilliseconds );
     },
     navigate: function( page ){
+        app.lastPage = app.currentPage;
         if( window.location.hash.substr(1) == page ){
             window.location = "";
         }
-        window.location = "#" + page;
-        // console.log( "navigate to : " , page );
-        // app.currentPage = page;
-        // if( window.location.hash.substr(1) == page ){
-        //     $.templates[ page ].link( "#app", app.data );
-        //     if( typeof( window[ page ] ) === "function" ){
-        //         window[ page ]();
-        //     } 
-        // }else{
-        //     window.location = "#" + page;
-        // }
-        // return false;  
+        window.location = "#" + page; 
     },
     // Application Constructor
     initialize: function() {
@@ -109,6 +100,9 @@ var app = {
                         if( confirm( "Are you sure you want to exit" ) ){
                             window.close();
                         }
+                    }else if( app.lastPage !== "" ){
+                        app.navigate( app.lastPage );
+                        app.lastPage = "screen_selection";
                     }else{
                         app.navigate( "screen_selection" );
                     }
@@ -155,6 +149,7 @@ var app = {
     },
     logout: function(){
         localStorage.clear();
+        app.lastPage = "";
         app.navigate( "home" );  
    },
    set_location: function(){    

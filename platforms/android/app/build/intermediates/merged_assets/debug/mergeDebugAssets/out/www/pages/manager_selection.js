@@ -1,2 +1,0 @@
-function manager_selection(){
-}
