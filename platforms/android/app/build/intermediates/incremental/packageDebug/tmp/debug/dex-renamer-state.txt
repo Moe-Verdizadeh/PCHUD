@@ -1,0 +1,4 @@
+#Mon Jan 06 15:01:43 EST 2020
+base.0=/Users/moe/Sites/palletconnecthud/platforms/android/app/build/intermediates/transforms/dexMerger/debug/0
+path.0=classes.dex
+renamed.0=classes.dex
