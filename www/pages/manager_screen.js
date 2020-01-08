@@ -113,73 +113,74 @@ var manager_screen_obj = {
     renderPalletChart: function ( container , data ){ 
         console.log( "Render Chart " , container , " Data " , data );  
    
-        var pallets="";
-        $.each( data.data , function(ind , row){
-            pallets = data.data[ind];  
-        });  
-        var ctx = document.getElementById( container );
-        var myChart = new Chart(ctx, {
-            type: 'pie',
-            data : {
-                datasets: [{
-                    data: [pallets.y]
-                }], 
-                labels: [
-                    pallets.name
-                ]
-            }, 
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
-    },
+        // var pallets="";
+        // $.each( data.data , function(ind , row){
+        //     pallets = data.data[ind];  
+        // });  
+        // var ctx = document.getElementById( container );
+    //     var myChart = new Chart( container,{
+    //         type: 'pie',
+    //         data : {
+    //             datasets: [{
+    //                 data: [pallets.y]
+    //             }], 
+    //             labels: [
+    //                 pallets.name
+    //             ]
+    //         }, 
+    //         options: {
+    //             scales: {
+    //                 yAxes: [{
+    //                     ticks: {
+    //                         beginAtZero: true
+    //                     }
+    //                 }]
+    //             }
+    //         }
+    //     });
+    // },
 
 
         // console.log( "Render Chart " , container , " Data " , data );
-        // Highcharts.chart(  {
-        //     credits: 'disabled',
-        //     title: false,
-        //     chart: {
-        //         renderTo: container,
-        //         plotBackgroundColor: null,
-        //         plotBorderWidth: null,
-        //         plotShadow: false,
-        //         type: 'pie',
-        //         height: 300,  
-        //     }, 
-        //     tooltip: {
-        //         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
-        //     },
-        //     plotOptions: {
-        //         pie: {
-        //             allowPointSelect: false, 
-        //             innerSize: '5%', 
-        //             dataLabels: {
-        //                 enabled: false,
-        //                 format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-        //             },
-        //             showInLegend: true,
-        //         },
-        //         series: {
-        //             animation: {
-        //                 duration: 300
-        //             }
-        //         }
-        //     },
-        //     legend: {  
-        //         align: 'left', 
-        //         itemStyle: { 
-        //             fontSize: '1em', 
-        //         },   
-        //     },
-        //     series: [ data ]
-        // }); 
+        Highcharts.chart(  {
+            credits: 'disabled',
+            title: false,
+            chart: {
+                renderTo: container,
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie',
+                height: 300,  
+            }, 
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' 
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: false, 
+                    innerSize: '5%', 
+                    dataLabels: {
+                        enabled: false,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    },
+                    showInLegend: true,
+                },
+                series: {
+                    animation: {
+                        duration: 300
+                    }
+                }
+            },
+            legend: {  
+                align: 'left', 
+                itemStyle: { 
+                    fontSize: '1em', 
+                },   
+            },
+            series: [ data ]
+        }); 
+    },
     
     fetchingVariationData: function(){
         $.ajax({
