@@ -24,13 +24,13 @@
 
 
 
-<div style="position: fixed; bottom: 10px; left:10px; width:300px;">
+<div style="position: fixed; bottom: 20px; left:30px; width:200px;;">
     <button onclick="app.logout(); app.navigate( 'home' )" class="btn btn-lg btn-block btn-default"> <b><span class="fa fa-sign-out-alt"></span> Logout</b></button>
 </div> 
 
-<div style="position: fixed; bottom: 10px; right:10px; width:400px;">
+<div style="position: fixed; bottom: 20px; right:30px; width:400px;">
     {{include tmpl="template_weather"/}} 
-    <div style="width: 100%;" >
+    <div style="width: 100%; bottom: 20px;" >
         <button onclick="app.navigate( 'settings' )" class="btn btn-lg btn-block btn-default"> <b><span class="fas fa-cogs"></span> Settings</b></button>
     </div>  
 </div> 
