@@ -188,7 +188,7 @@ var app = {
                     $.observable( app.data.weather ).setProperty( "temp_min"            , response.main.temp_min.toFixed(0) ); 
                     $.observable( app.data.weather ).setProperty( "weather_id"          , response.weather[0].id );   
                     $.observable( app.data.weather ).setProperty( "icon"                , response.weather[0].icon );  
-                    $.observable( app.data.weather ).setProperty( "icon_src"            , 'http://openweathermap.org/img/wn/' + response.weather[0].icon + '@2x.png'  );  
+                    $.observable( app.data.weather ).setProperty( "icon_src"            , 'https://openweathermap.org/img/wn/' + response.weather[0].icon + '@2x.png'  );  
                     $.observable( app.data.weather ).setProperty( "weather_description" , response.weather[0].description ); 
                     $.observable( app.data.weather ).setProperty( "loading"        , false ); 
                     console.log( "Current Weather" , response );
