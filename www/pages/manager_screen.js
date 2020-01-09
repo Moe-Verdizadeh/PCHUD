@@ -44,8 +44,7 @@ var manager_screen_obj = {
             $.ajax({
                 url: config.SERVICE_URL + "fetchChartData",
                 data: manager_screen_obj.ajaxData,
-                success: function ( response ){ 
-                    console.log( "Response" , response );     
+                success: function ( response ){  
                     var chart = Highcharts.chart( {
                         credits: 'disabled',
                         chart:{
@@ -110,37 +109,7 @@ var manager_screen_obj = {
             },
         });    
     },
-    renderPalletChart: function ( container , data ){ 
-        console.log( "Render Chart " , container , " Data " , data );  
-   
-        // var pallets="";
-        // $.each( data.data , function(ind , row){
-        //     pallets = data.data[ind];  
-        // });  
-        // var ctx = document.getElementById( container );
-    //     var myChart = new Chart( container,{
-    //         type: 'pie',
-    //         data : {
-    //             datasets: [{
-    //                 data: [pallets.y]
-    //             }], 
-    //             labels: [
-    //                 pallets.name
-    //             ]
-    //         }, 
-    //         options: {
-    //             scales: {
-    //                 yAxes: [{
-    //                     ticks: {
-    //                         beginAtZero: true
-    //                     }
-    //                 }]
-    //             }
-    //         }
-    //     });
-    // },
-
-
+    renderPalletChart: function ( container , remoteData ){  
         // console.log( "Render Chart " , container , " Data " , data );
         Highcharts.chart(  {
             credits: 'disabled',
@@ -158,19 +127,13 @@ var manager_screen_obj = {
             },
             plotOptions: {
                 pie: {
-                    allowPointSelect: false, 
-                    innerSize: '5%', 
+                    allowPointSelect: false,  
                     dataLabels: {
                         enabled: false,
                         format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                     },
                     showInLegend: true,
-                },
-                series: {
-                    animation: {
-                        duration: 300
-                    }
-                }
+                }, 
             },
             legend: {  
                 align: 'left', 
@@ -178,10 +141,9 @@ var manager_screen_obj = {
                     fontSize: '1em', 
                 },   
             },
-            series: [ data ]
+            series: [ remoteData ]
         }); 
-    },
-    
+    }, 
     fetchingVariationData: function(){
         $.ajax({
             url: config.SERVICE_URL + "dashboardVariations",
