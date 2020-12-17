@@ -264,4 +264,4 @@ Number.prototype.format = function(n, x) {
     return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
 };
 
- 
+$.views.converters("quantity_formatter" , function(val) { return parseFloat( val ) .format( 0 ); });
