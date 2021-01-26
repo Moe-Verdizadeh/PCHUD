@@ -31,6 +31,7 @@ var warehouse_screen_obj = {
             url: config.SERVICE_URL + "monthlyValues",
             data: {
                 vendors:    0,
+                all:        ( localStorage.warehouse_screen_type == "all"      ? 1 : 0 ),
                 new:        ( localStorage.warehouse_screen_type == "new"      ? 1 : 0 ),
                 recycled:   ( localStorage.warehouse_screen_type == "recycled" ? 1 : 0 )
             },
@@ -74,19 +75,15 @@ var warehouse_screen_obj = {
 
     loadTransactions: function( types ){
         $.ajax({
-            url: config.SERVICE_URL + "transactions",
+            url: config.SERVICE_URL + "transactions/pending_headers",
             data: {
-                grouped: true,
-                deleted: 0,
-                filter: JSON.stringify( { db_cr_indicator: 0, on_hold: 0 } ),
-                sort: 'transaction_date_time',
-                order: 'asc',
-                include_stock_items: true,
-                isQueue: true,
+                limit: 1000,
+                offset: 0,   
                 types: types,
+                includeSum: 1,
             },
             success: function( response ){
-                $.observable( app.data.warehouse.pending_transactions.rows ).refresh( response.data.rows );
+                $.observable( app.data.warehouse.pending_transactions.rows ).refresh( response );
                 $.each( app.data.warehouse.pending_transactions.rows , function( ind ){
                     applyDaysDiff( ind )
                 });

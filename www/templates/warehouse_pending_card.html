@@ -18,12 +18,12 @@
         {{/if}}
     </td>
     <td>
-        <h3 style="margin:0;">{^{:contact_name}}</h3>
+        <h4 style="margin:0;">{^{:contact_name}}</h4>
         {^{if public_notes.length > 0}} 
                 {^{:public_notes}}  
         {{/if}} 
     </td>
     <td width="1">
-        <h3 style="margin:0;" class="text-right">{^{quantity_formatter:sum}}</h3>  
+        <h3 style="margin:0;" class="text-right">{^{quantity_formatter:quantity}}</h3>  
     </td>
 </tr>

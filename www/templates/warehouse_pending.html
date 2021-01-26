@@ -10,7 +10,8 @@
             </thead>
             <tbody>
                 {^{for warehouse.pending_transactions.rows}}
-                    {^{if future_indicator == -1 || ftt_indicator == -1}}
+                {^{:future_type_indicator}}
+                    {^{if future_type_indicator == -1 || ftt_indicator == -1}}
                         {{include tmpl="template_warehouse_pending_card"/}}
                     {{/if}}
                 {{/for}} 
@@ -34,8 +35,8 @@
                 </tr>
             </thead>
             <tbody>
-                {^{for warehouse.pending_transactions.rows}}
-                    {^{if future_indicator == 1 || ftt_indicator == 1}}
+                {^{for warehouse.pending_transactions.rows}} 
+                    {^{if future_type_indicator == 1 || ftt_indicator == 1}}
                         {{include tmpl="template_warehouse_pending_card"/}}
                     {{/if}}
                 {{/for}} 

@@ -11,12 +11,22 @@ app.data.manager.piecharts = [
 ];
 
 var manager_screen_obj = {
-    ajaxData:       { vendors: 0, new: 0, recycled: 1 },
+    ajaxData:       {},
     palletData:     {}, 
     init: function(){ 
         app.pageRefresh( 60 , manager_screen_obj.init );
         console.log( "init manager screen..." );
-        manager_screen_obj.palletData = { sales: { name: '' , data : [] }, purchases: { name: '' , data : [] } , repairs : { name: '' , data : [] } };
+        manager_screen_obj.ajaxData = { 
+                                        vendors: 0, 
+                                        all: ( localStorage.office_screen_type == 'all' ? 1 : 0 ), 
+                                        new: ( localStorage.office_screen_type == 'new' ? 1 : 0 ), 
+                                        recycled: ( localStorage.office_screen_type == 'recycled' ? 1 : 0 )
+                                    };
+        manager_screen_obj.palletData = { 
+                                            sales: { name: '' , data : [] }, 
+                                            purchases: { name: '' , data : [] } , 
+                                            repairs : { name: '' , data : [] } 
+                                        };
         manager_screen_obj.variationData = { }
         manager_screen_obj.fetchingVariationData(); 
         manager_screen_obj.monthlyValues().then( function(){

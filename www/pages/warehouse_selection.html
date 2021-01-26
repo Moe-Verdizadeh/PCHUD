@@ -7,13 +7,19 @@
 </div> 
  
 <div class="row padded-top-3x">
-    <div class="col-xs-offset-3 col-xs-3">
+    <div class="col-xs-4">
+        <button onclick="localStorage.warehouse_screen_type = 'all'; app.navigate( 'warehouse_screen' )" class="btn btn-lg btn-block btn-default" style="padding-top:50px; padding-bottom:50px;">
+            <i class="fas fa-2x fa-pallet-alt"></i><br /><br />
+            <b>ALL PALLETS</b>
+        </button>
+    </div>
+    <div class="col-xs-4">
         <button onclick="localStorage.warehouse_screen_type = 'recycled'; app.navigate( 'warehouse_screen' )" class="btn btn-lg btn-block btn-default" style="padding-top:50px; padding-bottom:50px;">
             <i class="fas fa-2x fa-recycle"></i><br /><br />
             <b>RECYCLED PALLETS</b>
         </button>
     </div>
-    <div class="col-xs-3">
+    <div class="col-xs-4">
         <button onclick="localStorage.warehouse_screen_type = 'new'; app.navigate( 'warehouse_screen' )" class="btn btn-lg btn-block btn-default" style="padding-top:50px; padding-bottom:50px;">
             <i class="far fa-2x fa-pallet"></i><br /><br />
             <b>NEW PALLETS</b>

@@ -69,7 +69,7 @@ public class FullscreenActivity extends AppCompatActivity {
         mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.setInitialScale(100);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        mWebView.loadUrl("https://www.hud.palletconnect.com");
+        mWebView.loadUrl("https://hud.palletconnect.com");
     }
 
     @Override
